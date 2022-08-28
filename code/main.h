@@ -1,0 +1,64 @@
+#pragma once
+#include <bits/stdc++.h>
+using namespace std;
+
+const int N=3000;
+
+class prob
+{
+public:
+    // graph
+    int left_num, right_num;
+    vector<int> l2r[N], r2l[N];
+    // vector<int> lmovable(N),rmovable(N);
+    int movable[2][N];
+    // the current permutation of two sides. from [line number] to [index]
+    int currentPermutation[2][N];
+    // the optimal permutation
+    int CPopt[2][N];
+    // idx to line number
+    int position[2][N];
+
+    // M matrix in the paper
+    // m[0][i][j]=k means: in the left part of the graph,
+    // the number of crossings of i's and j's edges when i is above j (i,j are line number)
+    // O(dlog(d))
+    int m[2][N][N];
+
+    // Delta matrix for insert and swap(in the paper)
+    int Deltai[2][N][N], Deltas[2][N][N], Delta[2][N][N];
+
+    // guarantee j<i
+    // op[i][j] =0 -> do nothing
+    //          1 -> insert i before j
+    //          2 -> insert j after i
+    //          3 -> swap i j
+    int op[N][N];
+
+    // current number of crossings in the bipartite graph.
+    int currentsol, opt = 0x7fffffff;
+
+    // tabu table
+    int tabutable[2][N];
+
+    // aux for random perturbation
+    int shuffleaux[N];
+    int auxsz;
+    // dp
+    int dp[N];
+    tuple<int, int, int> ops[N][2];
+    // functions
+    int readgraph(string);
+    void maintainpositions();
+    int getcurrentsolution();
+    void random_perturbation(int,double);
+    void computeM(int, int);
+    void computeDelta(int, int);
+    bool dp2();
+    bool dp3();
+    void localsearch(bool USEDP_=false,bool USETABU=false);
+    void checkcp();
+};
+
+int runtimes = 0;
+int timelimit = 300;
