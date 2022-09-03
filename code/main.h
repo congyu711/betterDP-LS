@@ -8,12 +8,12 @@ class prob
 {
 public:
     // graph
-    int left_num, right_num;
+    int leftNum, rightNum;
     vector<int> l2r[N], r2l[N];
     // vector<int> lmovable(N),rmovable(N);
     int movable[2][N];
     // the current permutation of two sides. from [line number] to [index]
-    int currentPermutation[2][N];
+    int Permutation[2][N];
     // the optimal permutation
     int CPopt[2][N];
     // idx to line number
@@ -54,9 +54,7 @@ public:
     void random_perturbation(int,double);
     void computeM(int, int);
     void computeDelta(int, int);
-    bool dp2();
-    bool dp3();
-    void localsearch(bool USEDP_=false,bool USETABU=false);
+    void localsearch(bool USETABU=false);
     void checkcp();
 };
 
