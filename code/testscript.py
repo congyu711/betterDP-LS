@@ -1,28 +1,29 @@
 import os
 import subprocess
 
-workingdictionary='/home/congyu/dpls/code/'
-path="/home/congyu/dpls/instances/G_21_06/"
-# path="/home/congyu/dpls/code/myinstances/"
-# path="/home/congyu/dpls/instances_dblp/stallman_reduced/"
-output = subprocess.check_output(["ls",path])
+pwd=os.popen("pwd").read().strip('\n')+'/'
+print(pwd)
+datapath=pwd+"/../instances/G_21_06/"
+# datapath="/home/congyu/dpls/code/myinstances/"
+# datapath="/home/congyu/dpls/instances_dblp/stallman_reduced/"
+output = subprocess.check_output(["ls",datapath])
 files = output.decode("utf-8")
 files = files.split('\n')
 for f in files:
     print(f)
     if(len(f)==0 or f=='gen' or f=='gen.cpp' or f[0]=='.'):   continue
-    # os.system("./NewGraph "+path+f)
-    # os.system("./main "+path+f+' '+workingdictionary+'testresult.out')
-    subprocess.Popen(workingdictionary+"main "+path+f+' '+workingdictionary+"testresult1.out",shell=True)
-    subprocess.Popen(workingdictionary+"main "+path+f+' '+workingdictionary+"testresult2.out",shell=True)
-    subprocess.Popen(workingdictionary+"main "+path+f+' '+workingdictionary+"testresult3.out",shell=True)
-    subprocess.Popen(workingdictionary+"main "+path+f+' '+workingdictionary+"testresult4.out",shell=True)
-    subprocess.Popen(workingdictionary+"main "+path+f+' '+workingdictionary+"testresult5.out",shell=True)
-    subprocess.Popen(workingdictionary+"main "+path+f+' '+workingdictionary+"testresult6.out",shell=True)
-    subprocess.Popen(workingdictionary+"main "+path+f+' '+workingdictionary+"testresult7.out",shell=True)
-    subprocess.Popen(workingdictionary+"main "+path+f+' '+workingdictionary+"testresult8.out",shell=True)
-    subprocess.Popen(workingdictionary+"main "+path+f+' '+workingdictionary+"testresult9.out",shell=True)
-    subprocess.Popen(workingdictionary+"main "+path+f+' '+workingdictionary+"testresult10.out",shell=True).wait()
+    # os.system("./NewGraph "+datapath+f)
+    # os.system("./main "+datapath+f+' '+pwd+'testresult.out')
+    subprocess.Popen(pwd+"main "+datapath+f+' '+pwd+"testresult1.out",shell=True)
+    subprocess.Popen(pwd+"main "+datapath+f+' '+pwd+"testresult2.out",shell=True)
+    subprocess.Popen(pwd+"main "+datapath+f+' '+pwd+"testresult3.out",shell=True)
+    subprocess.Popen(pwd+"main "+datapath+f+' '+pwd+"testresult4.out",shell=True)
+    subprocess.Popen(pwd+"main "+datapath+f+' '+pwd+"testresult5.out",shell=True)
+    subprocess.Popen(pwd+"main "+datapath+f+' '+pwd+"testresult6.out",shell=True)
+    subprocess.Popen(pwd+"main "+datapath+f+' '+pwd+"testresult7.out",shell=True)
+    subprocess.Popen(pwd+"main "+datapath+f+' '+pwd+"testresult8.out",shell=True)
+    subprocess.Popen(pwd+"main "+datapath+f+' '+pwd+"testresult9.out",shell=True)
+    subprocess.Popen(pwd+"main "+datapath+f+' '+pwd+"testresult10.out",shell=True).wait()
 tmp=[]
 for i in range(1,11):
     with open("testresult"+str(i)+".out") as f:

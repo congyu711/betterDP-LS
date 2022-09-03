@@ -8,7 +8,7 @@
 #include <math.h>
 #include <time.h>
 #include <vector>
-#include "/home/congyu/dpls/code/counttime.cpp"
+#include "counttime.cpp"
 using namespace std;
 const int timelimit = 5; //最优解
 const int level = 2;
