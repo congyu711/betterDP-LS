@@ -383,7 +383,7 @@ void prob::localsearch(bool USETS)
 
             // int count[(lr?leftNum:rightNum)]={0};
             vector<int> count((lr?leftNum:rightNum),0);
-            set<int> idxs;
+            unordered_set<int> idxs;
             switch (l)
             {
             case 1:
