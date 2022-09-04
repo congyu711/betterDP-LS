@@ -38,8 +38,8 @@ public:
     // current number of crossings in the bipartite graph.
     int currentsol, opt = 0x7fffffff;
 
-    // tabu table
-    int tabutable[2][N];
+    // tabu search table
+    int TStable[2][N];
 
     // aux for random perturbation
     int shuffleaux[N];
@@ -48,15 +48,16 @@ public:
     int dp[N];
     tuple<int, int, int> ops[N][2];
     // functions
-    int readgraph(string);
-    void maintainpositions();
+    int readGraph(string);
+    void maintainPositions();
     int getcurrentsolution();
-    void random_perturbation(int,double);
+    void randPerturbation(int,double);
     void computeM(int, int);
     void computeDelta(int, int);
-    void localsearch(bool USETABU=false);
+    void localsearch(bool USETS=false);
     void checkcp();
 };
 
 int runtimes = 0;
-int timelimit = 300;
+int timelimit = 3;
+int tmp[N * N]; // aux array for mergesort

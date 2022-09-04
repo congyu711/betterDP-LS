@@ -1,11 +1,8 @@
-// main.cpp
 #include "main.h"
 #include "counttime.cpp"
-// #include "segment_tree.cpp"
-// #include "genTikz.cpp"
 
 mt19937 gen(time_point_cast<milliseconds>(system_clock::now()).time_since_epoch().count());
-int prob::readgraph(string filepath)
+int prob::readGraph(string filepath)
 {
     int a;
     ifstream fin(filepath);
@@ -28,9 +25,6 @@ int prob::readgraph(string filepath)
         while (fin.get() != '\n')
         {
             fin >> tmp;
-            // this means
-            // 1) vertex idx has an edge to vertex tmp-leftNum; or
-            // 2) vertex idx has an edge to that vertex of the tmp-leftNum th line in the input file.
             l2r[idx].push_back(tmp - leftNum);
         }
     }
@@ -50,15 +44,11 @@ int prob::readgraph(string filepath)
         //////////////////////////////
     }
 
-    ///////////////////////////////////////
-    // here use 2)
-    // because NewGraph.cpp use 2)      :(
     for (int i = 0; i < leftNum; i++)
     {
         for (auto &e : l2r[i])
             e = Permutation[1][e];
     }
-    ///////////////////////////////////////
 
     ///////////////////////////////////////
     for (int i = 0; i < rightNum; i++)
@@ -72,8 +62,8 @@ int prob::readgraph(string filepath)
     fin.close();
     return 0;
 }
-// just maintain positions array according to the currentpermutation array
-void prob::maintainpositions()
+// maintain positions array according to the Permutation array
+void prob::maintainPositions()
 {
     // maintain LRpositions array
     for (int i = 0; i < leftNum; i++)
@@ -82,7 +72,6 @@ void prob::maintainpositions()
         position[1][Permutation[1][i]] = i;
 }
 // mergesort: compute the number of inversion
-int tmp[N * N];
 int mergesort(vector<int> &a, int l, int r)
 {
     int res = 0;
@@ -109,7 +98,7 @@ int mergesort(vector<int> &a, int l, int r)
 // compute total number of edge crossings
 int prob::getcurrentsolution()
 {
-    maintainpositions();
+    maintainPositions();
     vector<int> aux;
     for (int i = 0; i < leftNum; i++)
     {
@@ -130,7 +119,7 @@ int prob::getcurrentsolution()
  * @param lr 0 for the left side, 1 for the right side.
  * @param p p percent of movable vertices will be rearranged. default is 100%
  */
-void prob::random_perturbation(int lr,double p=1.0)
+void prob::randPerturbation(int lr,double p=1.0)
 {
     srand(gen());
     ///////////////////////////////////////
@@ -248,14 +237,7 @@ void prob::computeDelta(int lr, int num)
         }
     }
 }
-/**
- * @brief do the local search
- * 
- * @param USEDP_ set to true to use dp3 as a perturbation.
- * false to use random perturbation.
- * @param USETABU true to use tabu search.
- */
-void prob::localsearch(bool USETABU)
+void prob::localsearch(bool USETS)
 {
     int lr = 0;
     int cnt = 100;
@@ -263,18 +245,18 @@ void prob::localsearch(bool USETABU)
     ops[0][0]=ops[0][1]=make_tuple(-1,0,0);
     auto tabu=[&](int i,int j)->void{
         int randtmp = 7 + gen() % 5;
-        if (op[i][j] == 1 && cnt - tabutable[lr][Permutation[lr][i]] < randtmp)
+        if (op[i][j] == 1 && cnt - TStable[lr][Permutation[lr][i]] < randtmp)
         {
             op[i][j] = 0;
             Delta[lr][i][j] = 0;
         }
-        else if (op[i][j] == 2 && cnt - tabutable[lr][Permutation[lr][j]] < randtmp)
+        else if (op[i][j] == 2 && cnt - TStable[lr][Permutation[lr][j]] < randtmp)
         {
             op[i][j] = 0;
             Delta[lr][i][j] = 0;
         }
-        else if (op[i][j] == 3 && (cnt - tabutable[lr][Permutation[lr][i]] < randtmp 
-        || cnt - tabutable[lr][Permutation[lr][j]] < randtmp))
+        else if (op[i][j] == 3 && (cnt - TStable[lr][Permutation[lr][i]] < randtmp 
+        || cnt - TStable[lr][Permutation[lr][j]] < randtmp))
         {
             op[i][j] = 0;
             Delta[lr][i][j] = 0;
@@ -285,7 +267,7 @@ void prob::localsearch(bool USETABU)
         int num = (lr ? rightNum : leftNum);
         // auto *g = (lr ? r2l : l2r);
         /////////////////////////////////////
-        maintainpositions();
+        maintainPositions();
         // computeM(lr, num);
         computeDelta(lr, num);
         // here delta matrix should be non-positive.
@@ -326,7 +308,7 @@ void prob::localsearch(bool USETABU)
                     op[i][j] = 0;
                     Delta[lr][i][j] = 0;
                 }
-                if(USETABU) tabu(i,j);
+                if(USETS) tabu(i,j);
             }
         }
         // dp
@@ -377,7 +359,7 @@ void prob::localsearch(bool USETABU)
         }
 
     };
-    maintainpositions();
+    maintainPositions();
     computeM(0,leftNum);
     computeM(1,rightNum);
     while (1)
@@ -424,14 +406,14 @@ void prob::localsearch(bool USETABU)
                         m[lr^1][ridxa][ridxb]-=count[ridxb];
                     }
                 }
-                tabutable[lr][Permutation[lr][i]] = cnt;
+                TStable[lr][Permutation[lr][i]] = cnt;
                 t = Permutation[lr][i];
                 for (int ii = i; ii >= j + 1; ii--)
                 {
                     Permutation[lr][ii] = Permutation[lr][ii - 1];
                 }
                 Permutation[lr][j] = t;
-                // maintainpositions();
+                // maintainPositions();
                 // computeM(lr^1,(lr?leftNum:rightNum));
                 break;
 
@@ -454,7 +436,7 @@ void prob::localsearch(bool USETABU)
                         m[lr^1][ridxa][ridxb]+=count[ridxb];
                     }
                 }
-                tabutable[lr][Permutation[lr][j]] = cnt;
+                TStable[lr][Permutation[lr][j]] = cnt;
                 t = Permutation[lr][j];
                 for (int ii = j; ii <= i - 1; ii++)
                 {
@@ -503,8 +485,8 @@ void prob::localsearch(bool USETABU)
                         m[lr^1][ridxa][ridxb]+=count1[ridxb];
                     }
                 }
-                tabutable[lr][Permutation[lr][i]] = cnt;
-                tabutable[lr][Permutation[lr][j]] = cnt;
+                TStable[lr][Permutation[lr][i]] = cnt;
+                TStable[lr][Permutation[lr][j]] = cnt;
                 swap(Permutation[lr][i], Permutation[lr][j]);
                 break;
             }
@@ -517,18 +499,18 @@ void prob::localsearch(bool USETABU)
             if (l == (-1))
                 pos = i;
         }
-        maintainpositions();
+        maintainPositions();
         currentsol+=dp[num-1];
         // can not improve the current solution.
-        if (lr == 1 && presol == currentsol)
+        if (presol == currentsol)
         {
             // if TS is used, reset cnt and do it again.
-            if(USETABU)
+            if(USETS)
             {
-                cnt+=5000;
+                cnt+=15;  // reset TS table
                 Delta_dp();
             }
-            if(!USETABU||dp[num-1]==0)
+            if(!USETS||dp[num-1]==0)
             {
                 // new opt
                 if (opt > currentsol)
@@ -543,19 +525,17 @@ void prob::localsearch(bool USETABU)
                     // backtracking to the previous solution.
                     memcpy(Permutation[0], CPopt[0], 4 * leftNum);
                     memcpy(Permutation[1], CPopt[1], 4 * rightNum);
-                    maintainpositions();
                     currentsol=getcurrentsolution();
                     computeM(0,leftNum);
                     computeM(1,rightNum);
-                    cnt+=15;    // this resets the tabu table.
+                    cnt+=15;    // this resets the TS table.
                 }
                 else
                 {
                     opt=min(opt,currentsol);
-                    random_perturbation(0,0.1+(gen()%100)/500.0);
-                    random_perturbation(1,0.1+(gen()%100)/500.0);
-                    // random_perturbation(lr);
-                    maintainpositions();
+                    randPerturbation(0,0.1+(gen()%100)/500.0);
+                    randPerturbation(1,0.1+(gen()%100)/500.0);
+                    // randPerturbation(lr);
                     currentsol=getcurrentsolution();
                     computeM(0,leftNum);
                     computeM(1,rightNum);
@@ -569,7 +549,10 @@ void prob::localsearch(bool USETABU)
         lr ^= 1;
         ed = system_clock::now();
         if (counttime(st, ed) > timelimit)
+        {
+            maintainPositions();
             break;
+        }
     }
 }
 void prob::checkcp()
@@ -607,40 +590,20 @@ void prob::checkcp()
 }
 int main(int argc,char **argv)
 {
-    string filepath(argv[1]);
-    string respath=string(argv[2]);
-    ofstream testresult(respath,ios::app);
+    string inputPath(argv[1]);
+    string outputPath(argv[2]);
+    ofstream testresult(outputPath,ios::app);
     ios::sync_with_stdio(false);
     static prob a;
-    a.readgraph(filepath);
-    a.random_perturbation(0);
-    a.random_perturbation(1);
-    a.maintainpositions();
+    a.readGraph(inputPath);
+    a.randPerturbation(0);
+    a.randPerturbation(1);
     a.currentsol = a.getcurrentsolution();
-    // cout << "init number of crossings: " << currentsol << endl;
-    // testresult<<filepath<<endl;
-    // testresult << "init number of crossings: " << a.currentsol << endl;
-    // st=system_clock::now();
-    // getcurrentsolution();
-    // ed=system_clock::now();
-    // cout<<"getsolution time: "<<counttime()<<endl;
 
     st = system_clock::now();
     a.localsearch(true);
     a.currentsol = a.getcurrentsolution();
     a.opt=min(a.opt,a.currentsol);
     ed = system_clock::now();
-    // testresult<<"main.cpp opt: "<<a.opt<<endl;
-    testresult<<a.opt<<endl;
-    //////////////////////////////////////////////////////////
-    // dpls result                                          //
-    //////////////////////////////////////////////////////////
-    // ifstream inputfile("./result2.out");
-    // for (int i = 0; i < a.leftNum; i++)
-    //     inputfile >> a.Permutation[0][i];
-    // for (int i = 0; i < a.rightNum; i++)
-    //     inputfile >> a.Permutation[1][i];
-    // a.currentsol = a.opt = 0x7fffffff;
-    // a.currentsol=a.getcurrentsolution();
-    // testresult<<"NewGraph.cpp opt: "<<a.currentsol<<"\n\n";
+    testresult<<a.opt<<'\n';
 }
