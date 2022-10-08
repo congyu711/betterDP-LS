@@ -560,18 +560,18 @@ void prob::checkcp()
     cout<<"left--right"<<endl;
     for(int i=0;i<max(leftNum,rightNum);i++)
     {
-        string a=(i<leftNum?to_string(Permutation[0][i]):"");
-        string b=(i<rightNum?to_string(Permutation[1][i]):"");
+        string a=(i<leftNum?to_string(CPopt[0][i]):"");
+        string b=(i<rightNum?to_string(CPopt[1][i]):"");
         cout<<setw(5)<<a<<' '<<b<<endl;
     }
     vector<int> checkl(leftNum),checkr(rightNum);
     for(int i=0;i<leftNum;i++)
     {
-        checkl[Permutation[0][i]]++;
+        checkl[CPopt[0][i]]++;
     }
     for(int i=0;i<rightNum;i++)
     {
-        checkr[Permutation[1][i]]++;
+        checkr[CPopt[1][i]]++;
     }
     cout<<"l ";
     for(auto e:checkl)
@@ -583,10 +583,13 @@ void prob::checkcp()
     {
         if(e!=1)    cout<<"is not permutation\n";
     }
-
-    cout<<"input to continue\n";
-    char aaa;
-    cin>>aaa;
+    
+    // cout<<"input to continue\n";
+    // char aaa;
+    // cin>>aaa;
+    memcpy(Permutation[0], CPopt[0], 4 * leftNum);
+    memcpy(Permutation[1], CPopt[1], 4 * rightNum);
+    cout<<getcurrentsolution()<<endl;
 }
 int main(int argc,char **argv)
 {
@@ -606,4 +609,12 @@ int main(int argc,char **argv)
     a.opt=min(a.opt,a.currentsol);
     ed = system_clock::now();
     testresult<<a.opt<<'\n';
+    a.checkcp();
+
+
+    ifstream fin("result2.out");
+    for(int i=0;i<a.leftNum;i++)    fin>>a.Permutation[0][i];
+    for(int i=0;i<a.rightNum;i++)   fin>>a.Permutation[1][i];
+    a.maintainPositions();
+    cout<<"NewGraph result: "<<a.getcurrentsolution()<<endl; 
 }
