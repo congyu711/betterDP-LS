@@ -1321,7 +1321,7 @@ int main()
         // b[len - 1] = '\0';
         srand((unsigned)time(NULL)); // 改变随机数种子，使每次运行结果不同
         renew(); // 重置数组
-        initialize("/home/congyu/dpls/instances/GB_1_rnd1_01/GB_1_rnd1_01_0001_30.txt"); // 读入数据及一些简单的初始化
+        initialize("/home/congyu/dpls/testins/incgraph_2_0.30_5_30_1.20_1.txt"); // 读入数据及一些简单的初始化
         datainit(); // 计算评估矩阵
 
         times = 0;

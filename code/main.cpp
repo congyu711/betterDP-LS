@@ -1,7 +1,8 @@
 #include "main.h"
 #include "counttime.cpp"
 
-mt19937 gen(time_point_cast<milliseconds>(system_clock::now()).time_since_epoch().count());
+// mt19937 gen(time_point_cast<milliseconds>(system_clock::now()).time_since_epoch().count());
+mt19937 gen;
 int prob::readGraph(string filepath)
 {
     int a;
@@ -342,7 +343,7 @@ void prob::localsearch(bool USETS)
                     dp[i] = minn;
                     int j = minidx;
                     ops[i][0] = make_tuple(op[i][j + 1], i, j + 1);
-                    if(minn!=-1)
+                    if(minidx!=-1)
                         ops[i][1] = make_tuple(-1, j, 0);
                     else    ops[i][1]=make_tuple(-1,0,0);
                 }
@@ -501,6 +502,12 @@ void prob::localsearch(bool USETS)
         }
         maintainPositions();
         currentsol+=dp[num-1];
+        if(currentsol!=getcurrentsolution())
+        {
+            cout<<"error!\n"<<endl;
+            cout<<"num"<<num<<endl;
+            cout<<currentsol<<" != "<<getcurrentsolution()<<endl;
+        }
         // can not improve the current solution.
         if (presol == currentsol)
         {
@@ -599,12 +606,12 @@ int main(int argc,char **argv)
     ios::sync_with_stdio(false);
     static prob a;
     a.readGraph(inputPath);
-    a.randPerturbation(0);
-    a.randPerturbation(1);
+    // a.randPerturbation(0);
+    // a.randPerturbation(1);
     a.currentsol = a.getcurrentsolution();
 
     st = system_clock::now();
-    a.localsearch(true);
+    a.localsearch(false);
     a.currentsol = a.getcurrentsolution();
     a.opt=min(a.opt,a.currentsol);
     ed = system_clock::now();
@@ -612,9 +619,9 @@ int main(int argc,char **argv)
     a.checkcp();
 
 
-    ifstream fin("result2.out");
-    for(int i=0;i<a.leftNum;i++)    fin>>a.Permutation[0][i];
-    for(int i=0;i<a.rightNum;i++)   fin>>a.Permutation[1][i];
-    a.maintainPositions();
-    cout<<"NewGraph result: "<<a.getcurrentsolution()<<endl; 
+    // ifstream fin("result2.out");
+    // for(int i=0;i<a.leftNum;i++)    fin>>a.Permutation[0][i];
+    // for(int i=0;i<a.rightNum;i++)   fin>>a.Permutation[1][i];
+    // a.maintainPositions();
+    // cout<<"NewGraph result: "<<a.getcurrentsolution()<<endl; 
 }
