@@ -13,20 +13,17 @@ int prob::readGraph(string filepath)
     {
         int idx, tmp;
         fin >> tmp;
-        //////////////////////////////
-        // ignore movable bit
-        // lmovable[i]=0;
-        //////////////////////////////
 
         fin >> idx;
-        movable[0][idx] = tmp;
-        movable[0][idx] ^= 1;
+        movable[0][i] = tmp;
+        movable[0][i] ^= 1;
         // Permutation[0][i] = i; not idx
-        Permutation[0][i] = i;
+        // Permutation[0][i] = i;
+        Permutation[0][idx]=i;
         while (fin.get() != '\n')
         {
             fin >> tmp;
-            l2r[idx].push_back(tmp - leftNum);
+            l2r[i].push_back(tmp - leftNum);
         }
     }
     for (int i = 0; i < rightNum; i++)
@@ -35,14 +32,10 @@ int prob::readGraph(string filepath)
         fin >> tmp >> idx;
         if (idx >= rightNum)
             idx -= leftNum;
-        movable[1][idx] = tmp;
-        movable[1][idx] ^= 1;
+        movable[1][i] = tmp;
+        movable[1][i] ^= 1;
 
         Permutation[1][i] = idx;
-        //////////////////////////////
-        // ignore movable bit
-        // rmovable[i]=0;
-        //////////////////////////////
     }
 
     for (int i = 0; i < leftNum; i++)
@@ -527,7 +520,7 @@ void prob::localsearch(bool USETS)
                     memcpy(CPopt[1], Permutation[1], 4 * rightNum);
                 }
                 // same solution
-                else if (opt<currentsol||(opt == currentsol && gen()%3))
+                else if (opt == currentsol && gen()%3)
                 {
                     // backtracking to the previous solution.
                     memcpy(Permutation[0], CPopt[0], 4 * leftNum);
@@ -611,12 +604,12 @@ int main(int argc,char **argv)
     a.currentsol = a.getcurrentsolution();
 
     st = system_clock::now();
-    a.localsearch(false);
+    a.localsearch(true);
     a.currentsol = a.getcurrentsolution();
     a.opt=min(a.opt,a.currentsol);
     ed = system_clock::now();
     testresult<<a.opt<<'\n';
-    a.checkcp();
+    // a.checkcp();
 
 
     // ifstream fin("result2.out");

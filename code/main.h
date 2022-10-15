@@ -59,5 +59,5 @@ public:
 };
 
 int runtimes = 0;
-int timelimit = 5;
+int timelimit = 10;
 int tmp[N * N]; // aux array for mergesort
