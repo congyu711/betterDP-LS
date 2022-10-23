@@ -1,8 +1,7 @@
 #include "main.h"
 #include "counttime.cpp"
 
-// mt19937 gen(time_point_cast<milliseconds>(system_clock::now()).time_since_epoch().count());
-mt19937 gen;
+mt19937 gen(time_point_cast<milliseconds>(system_clock::now()).time_since_epoch().count());
 int prob::readGraph(string filepath)
 {
     int a;
@@ -512,37 +511,41 @@ void prob::localsearch(bool USETS)
             }
             if(!USETS||dp[num-1]==0)
             {
-                // new opt
-                if (opt > currentsol)
-                {
-                    opt = currentsol;
-                    memcpy(CPopt[0], Permutation[0], 4 * leftNum);
-                    memcpy(CPopt[1], Permutation[1], 4 * rightNum);
-                }
+                
                 // same solution
-                else if (opt == currentsol && gen()%3)
-                {
-                    // backtracking to the previous solution.
-                    memcpy(Permutation[0], CPopt[0], 4 * leftNum);
-                    memcpy(Permutation[1], CPopt[1], 4 * rightNum);
-                    currentsol=getcurrentsolution();
-                    computeM(0,leftNum);
-                    computeM(1,rightNum);
-                    cnt+=15;    // this resets the TS table.
-                }
-                else
-                {
-                    opt=min(opt,currentsol);
-                    randPerturbation(0,0.1+(gen()%100)/500.0);
-                    randPerturbation(1,0.1+(gen()%100)/500.0);
-                    // randPerturbation(lr);
-                    currentsol=getcurrentsolution();
-                    computeM(0,leftNum);
-                    computeM(1,rightNum);
-                    // computeM(lr^1,(lr?leftNum:rightNum));
-                    runtimes++;
-                    cnt+=15;    // this resets the tabu table.
-                }
+                // else if (opt == currentsol && gen()%3)
+                // {
+                //     // backtracking to the previous solution.
+                //     memcpy(Permutation[0], CPopt[0], 4 * leftNum);
+                //     memcpy(Permutation[1], CPopt[1], 4 * rightNum);
+                //     currentsol=getcurrentsolution();
+                //     computeM(0,leftNum);
+                //     computeM(1,rightNum);
+                //     cnt+=15;    // this resets the TS table.
+                // }
+                // else
+                // {
+                opt=min(opt,currentsol);
+                // TODO:    变强度的扰动
+                //          用历史最优解扰动
+                //          赦免策略
+                randPerturbation(0,0.1+(gen()%100)/500.0);
+                randPerturbation(1,0.1+(gen()%100)/500.0);
+                // randPerturbation(lr);
+                currentsol=getcurrentsolution();
+                computeM(0,leftNum);
+                computeM(1,rightNum);
+                // computeM(lr^1,(lr?leftNum:rightNum));
+                runtimes++;
+                cnt+=15;    // this resets the tabu table.
+                // }
+            }
+            // new opt
+            if (opt > currentsol)
+            {
+                opt = currentsol;
+                memcpy(CPopt[0], Permutation[0], 4 * leftNum);
+                memcpy(CPopt[1], Permutation[1], 4 * rightNum);
             }
         }
         presol = currentsol;
@@ -550,7 +553,6 @@ void prob::localsearch(bool USETS)
         ed = system_clock::now();
         if (counttime(st, ed) > timelimit)
         {
-            maintainPositions();
             break;
         }
     }

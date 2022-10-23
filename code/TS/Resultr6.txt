@@ -154,3 +154,9 @@ best possible:31
 at:15 generation 0.127676seconds with RANGE 1
 lseq:8 9 0 1 2 3 4 7 5 6 
 rseq:20 18 10 11 15 16 12 13 17 14 19 
+S4 0.500000
+/home/congyu/dpls/instances/GB_1_rnd1_01/GB_1_rnd1_01_0001_30.txt:
+best possible:31
+at:9 generation 0.083001seconds with RANGE 1
+lseq:9 0 7 1 2 3 4 5 6 8 
+rseq:10 11 15 16 12 13 17 14 19 18 20 
