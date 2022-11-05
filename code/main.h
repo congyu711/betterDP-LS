@@ -52,6 +52,7 @@ public:
     void maintainPositions();
     int getcurrentsolution();
     void randPerturbation(int,double);
+    void randPerturbation(int,int);
     void computeM(int, int);
     void computeDelta(int, int);
     void localsearch(bool USETS=false);

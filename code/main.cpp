@@ -137,6 +137,31 @@ void prob::randPerturbation(int lr,double p=1.0)
             Permutation[lr][i] = shuffleaux[auxsz++];
     }
 }
+void prob::randPerturbation(int lr,int p=1)
+{
+    srand(gen());
+    ///////////////////////////////////////
+    int num = (lr ? rightNum : leftNum);
+    ///////////////////////////////////////
+    vector<bool> shuffleflag(num,false);
+    auxsz = 0;
+    for (int i = 0; i < num; i++)
+    {
+        // can not move
+        if (movable[lr][Permutation[lr][i]] == 0 || auxsz<p)
+        {
+            shuffleaux[auxsz++] = Permutation[lr][i];
+            shuffleflag[Permutation[lr][i]]=true;
+        }
+    }
+    random_shuffle(Permutation[lr], Permutation[lr] + num);
+    auxsz = 0;
+    for (int i = 0; i < num; i++)
+    {
+        if (shuffleflag[Permutation[lr][i]])
+            Permutation[lr][i] = shuffleaux[auxsz++];
+    }
+}
 void prob::computeM(int lr, int num)
 {
     ///////////////////////////////////////
@@ -355,6 +380,9 @@ void prob::localsearch(bool USETS)
     maintainPositions();
     computeM(0,leftNum);
     computeM(1,rightNum);
+    memcpy(CPopt[0], Permutation[0], 4 * leftNum);
+    memcpy(CPopt[1], Permutation[1], 4 * rightNum);
+    int ps=3;
     while (1)
     {
         cnt++;
@@ -503,6 +531,7 @@ void prob::localsearch(bool USETS)
         // can not improve the current solution.
         if (presol == currentsol)
         {
+            if(currentsol<opt)    ps=3;  //和最优解比较
             // if TS is used, reset cnt and do it again.
             if(USETS)
             {
@@ -511,34 +540,20 @@ void prob::localsearch(bool USETS)
             }
             if(!USETS||dp[num-1]==0)
             {
-                
-                // same solution
-                // else if (opt == currentsol && gen()%3)
-                // {
-                //     // backtracking to the previous solution.
-                //     memcpy(Permutation[0], CPopt[0], 4 * leftNum);
-                //     memcpy(Permutation[1], CPopt[1], 4 * rightNum);
-                //     currentsol=getcurrentsolution();
-                //     computeM(0,leftNum);
-                //     computeM(1,rightNum);
-                //     cnt+=15;    // this resets the TS table.
-                // }
-                // else
-                // {
                 opt=min(opt,currentsol);
-                // TODO:    变强度的扰动
-                //          用历史最优解扰动
-                //          赦免策略
-                randPerturbation(0,0.1+(gen()%100)/500.0);
-                randPerturbation(1,0.1+(gen()%100)/500.0);
-                // randPerturbation(lr);
+                memcpy(Permutation[0], CPopt[0], 4 * leftNum);
+                memcpy(Permutation[1], CPopt[1], 4 * rightNum);
+                ps++;
+                randPerturbation(0,ps);
+                randPerturbation(1,ps);
+                // randPerturbation(0,0.1+(gen()%100)/500.0);
+                // randPerturbation(1,0.1+(gen()%100)/500.0);
+
                 currentsol=getcurrentsolution();
                 computeM(0,leftNum);
                 computeM(1,rightNum);
-                // computeM(lr^1,(lr?leftNum:rightNum));
                 runtimes++;
                 cnt+=15;    // this resets the tabu table.
-                // }
             }
             // new opt
             if (opt > currentsol)
