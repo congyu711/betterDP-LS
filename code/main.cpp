@@ -544,8 +544,8 @@ void prob::localsearch(bool USETS)
                 memcpy(Permutation[0], CPopt[0], 4 * leftNum);
                 memcpy(Permutation[1], CPopt[1], 4 * rightNum);
                 ps++;
-                randPerturbation(0,ps);
-                randPerturbation(1,ps);
+                randPerturbation(0,1.0*ps/leftNum+0.1);
+                randPerturbation(1,1.0*ps/rightNum+0.1);
                 // randPerturbation(0,0.1+(gen()%100)/500.0);
                 // randPerturbation(1,0.1+(gen()%100)/500.0);
 
