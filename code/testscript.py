@@ -3,7 +3,7 @@ import subprocess
 
 pwd=os.popen("pwd").read().strip('\n')+'/'
 print(pwd)
-datapath=pwd+"/../instances/G_21_06/"
+datapath=pwd+"/BGCMP/struct_bip_gr/"
 # datapath="/home/congyu/dpls/code/myinstances/"
 # datapath="/home/congyu/dpls/instances_dblp/stallman_reduced/"
 output = subprocess.check_output(["ls",datapath])
@@ -35,5 +35,5 @@ for i in range(1,5):
                 if(i==4): tmp[idx]=tmp[idx]+'\n'
                 idx=idx+1
 
-with open("testresultALL.csv",'a') as f:
+with open("struct_bip_gr.csv",'a') as f:
     f.writelines(tmp)

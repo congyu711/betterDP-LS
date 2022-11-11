@@ -6,52 +6,67 @@ int prob::readGraph(string filepath)
 {
     int a;
     ifstream fin(filepath);
-    fin >> a;
-    fin >> leftNum >> rightNum;
-    for (int i = 0; i < leftNum; i++)
+    fin>>leftNum>>rightNum>>a;
+    for(int i=0;i<leftNum;i++) movable[0][i]=1;
+    for(int i=0;i<rightNum;i++) movable[1][i]=1;
+    int b,c;
+    for(int i=0;i<a;i++)
     {
-        int idx, tmp;
-        fin >> tmp;
-
-        fin >> idx;
-        movable[0][i] = tmp;
-        movable[0][i] ^= 1;
-        // Permutation[0][i] = i; not idx
-        // Permutation[0][i] = i;
-        Permutation[0][idx]=i;
-        while (fin.get() != '\n')
-        {
-            fin >> tmp;
-            l2r[i].push_back(tmp - leftNum);
-        }
+        fin>>b>>c;
+        b--,c--;
+        c-=leftNum;
+        l2r[b].push_back(c);
+        r2l[c].push_back(b);
     }
-    for (int i = 0; i < rightNum; i++)
-    {
-        int idx, tmp;
-        fin >> tmp >> idx;
-        if (idx >= rightNum)
-            idx -= leftNum;
-        movable[1][i] = tmp;
-        movable[1][i] ^= 1;
+    for(int i=0;i<leftNum;i++)  Permutation[0][i]=i;
+    for(int i=0;i<rightNum;i++)  Permutation[1][i]=i;
 
-        Permutation[1][i] = idx;
-    }
+    // fin >> a;
+    // fin >> leftNum >> rightNum;
+    // for (int i = 0; i < leftNum; i++)
+    // {
+    //     int idx, tmp;
+    //     fin >> tmp;
 
-    for (int i = 0; i < leftNum; i++)
-    {
-        for (auto &e : l2r[i])
-            e = Permutation[1][e];
-    }
+    //     fin >> idx;
+    //     movable[0][i] = tmp;
+    //     movable[0][i] ^= 1;
+    //     // Permutation[0][i] = i; not idx
+    //     // Permutation[0][i] = i;
+    //     Permutation[0][idx]=i;
+    //     while (fin.get() != '\n')
+    //     {
+    //         fin >> tmp;
+    //         l2r[i].push_back(tmp - leftNum);
+    //     }
+    // }
+    // for (int i = 0; i < rightNum; i++)
+    // {
+    //     int idx, tmp;
+    //     fin >> tmp >> idx;
+    //     if (idx >= rightNum)
+    //         idx -= leftNum;
+    //     movable[1][i] = tmp;
+    //     movable[1][i] ^= 1;
 
-    ///////////////////////////////////////
-    for (int i = 0; i < rightNum; i++)
-        Permutation[1][i] = i;
-    ///////////////////////////////////////
+    //     Permutation[1][i] = idx;
+    // }
 
-    // compute r2l graph
-    for (int i = 0; i < leftNum; i++)
-        for (auto &e : l2r[i])
-            r2l[e].push_back(i);
+    // for (int i = 0; i < leftNum; i++)
+    // {
+    //     for (auto &e : l2r[i])
+    //         e = Permutation[1][e];
+    // }
+
+    // ///////////////////////////////////////
+    // for (int i = 0; i < rightNum; i++)
+    //     Permutation[1][i] = i;
+    // ///////////////////////////////////////
+
+    // // compute r2l graph
+    // for (int i = 0; i < leftNum; i++)
+    //     for (auto &e : l2r[i])
+    //         r2l[e].push_back(i);
     fin.close();
     return 0;
 }
@@ -625,7 +640,7 @@ int main(int argc,char **argv)
     a.currentsol = a.getcurrentsolution();
     a.opt=min(a.opt,a.currentsol);
     ed = system_clock::now();
-    testresult<<a.opt<<'\n';
+    testresult<<inputPath<<' '<<a.opt<<'\n';
     // a.checkcp();
 
 
