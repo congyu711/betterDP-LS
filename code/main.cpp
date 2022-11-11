@@ -531,7 +531,14 @@ void prob::localsearch(bool USETS)
         // can not improve the current solution.
         if (presol == currentsol)
         {
-            if(currentsol<opt)    ps=3;  //和最优解比较
+            // new opt
+            if (opt > currentsol)
+            {
+                opt = currentsol;
+                ps=3;
+                memcpy(CPopt[0], Permutation[0], 4 * leftNum);
+                memcpy(CPopt[1], Permutation[1], 4 * rightNum);
+            }
             // if TS is used, reset cnt and do it again.
             if(USETS)
             {
@@ -553,15 +560,8 @@ void prob::localsearch(bool USETS)
                 computeM(0,leftNum);
                 computeM(1,rightNum);
                 runtimes++;
-                cnt+=15;    // this resets the tabu table.
             }
-            // new opt
-            if (opt > currentsol)
-            {
-                opt = currentsol;
-                memcpy(CPopt[0], Permutation[0], 4 * leftNum);
-                memcpy(CPopt[1], Permutation[1], 4 * rightNum);
-            }
+            cnt+=15;    // this resets the tabu table.
         }
         presol = currentsol;
         lr ^= 1;

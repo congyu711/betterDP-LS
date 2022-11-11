@@ -1,0 +1,159 @@
+<?xml version="1.0"?>
+<graph name="G" nb_arcs="112" nb_vertices="44" nb_niveaux="4" density="0.298666666666667">;
+ <vertex name="v05"/>
+ <vertex name="v43"/>
+ <vertex name="v26"/>
+ <vertex name="v34"/>
+ <vertex name="v42"/>
+ <vertex name="v35"/>
+ <vertex name="v33"/>
+ <vertex name="v11"/>
+ <vertex name="v17"/>
+ <vertex name="v36"/>
+ <vertex name="v23"/>
+ <vertex name="v41"/>
+ <vertex name="v02"/>
+ <vertex name="v31"/>
+ <vertex name="v18"/>
+ <vertex name="v00"/>
+ <vertex name="v25"/>
+ <vertex name="v06"/>
+ <vertex name="v38"/>
+ <vertex name="v14"/>
+ <vertex name="v37"/>
+ <vertex name="v32"/>
+ <vertex name="v15"/>
+ <vertex name="v27"/>
+ <vertex name="v40"/>
+ <vertex name="v07"/>
+ <vertex name="v04"/>
+ <vertex name="v28"/>
+ <vertex name="v39"/>
+ <vertex name="v21"/>
+ <vertex name="v12"/>
+ <vertex name="v09"/>
+ <vertex name="v22"/>
+ <vertex name="v24"/>
+ <vertex name="v29"/>
+ <vertex name="v30"/>
+ <vertex name="v19"/>
+ <vertex name="v08"/>
+ <vertex name="v10"/>
+ <vertex name="v01"/>
+ <vertex name="v20"/>
+ <vertex name="v16"/>
+ <vertex name="v03"/>
+ <vertex name="v13"/>
+ <arc name="v00->v09" from="v00" to="v09"/>
+ <arc name="v00->v10" from="v00" to="v10"/>
+ <arc name="v01->v11" from="v01" to="v11"/>
+ <arc name="v02->v12" from="v02" to="v12"/>
+ <arc name="v03->v13" from="v03" to="v13"/>
+ <arc name="v04->v14" from="v04" to="v14"/>
+ <arc name="v04->v15" from="v04" to="v15"/>
+ <arc name="v05->v16" from="v05" to="v16"/>
+ <arc name="v06->v17" from="v06" to="v17"/>
+ <arc name="v07->v18" from="v07" to="v18"/>
+ <arc name="v08->v19" from="v08" to="v19"/>
+ <arc name="v09->v20" from="v09" to="v20"/>
+ <arc name="v09->v21" from="v09" to="v21"/>
+ <arc name="v10->v22" from="v10" to="v22"/>
+ <arc name="v11->v23" from="v11" to="v23"/>
+ <arc name="v12->v24" from="v12" to="v24"/>
+ <arc name="v13->v25" from="v13" to="v25"/>
+ <arc name="v14->v26" from="v14" to="v26"/>
+ <arc name="v15->v27" from="v15" to="v27"/>
+ <arc name="v16->v28" from="v16" to="v28"/>
+ <arc name="v17->v29" from="v17" to="v29"/>
+ <arc name="v18->v30" from="v18" to="v30"/>
+ <arc name="v19->v31" from="v19" to="v31"/>
+ <arc name="v20->v32" from="v20" to="v32"/>
+ <arc name="v21->v33" from="v21" to="v33"/>
+ <arc name="v22->v34" from="v22" to="v34"/>
+ <arc name="v23->v35" from="v23" to="v35"/>
+ <arc name="v24->v36" from="v24" to="v36"/>
+ <arc name="v25->v37" from="v25" to="v37"/>
+ <arc name="v26->v38" from="v26" to="v38"/>
+ <arc name="v27->v39" from="v27" to="v39"/>
+ <arc name="v28->v40" from="v28" to="v40"/>
+ <arc name="v29->v41" from="v29" to="v41"/>
+ <arc name="v30->v42" from="v30" to="v42"/>
+ <arc name="v31->v43" from="v31" to="v43"/>
+ <arc name="v03->v11" from="v03" to="v11"/>
+ <arc name="v31->v33" from="v31" to="v33"/>
+ <arc name="v01->v13" from="v01" to="v13"/>
+ <arc name="v15->v29" from="v15" to="v29"/>
+ <arc name="v15->v20" from="v15" to="v20"/>
+ <arc name="v05->v12" from="v05" to="v12"/>
+ <arc name="v02->v14" from="v02" to="v14"/>
+ <arc name="v10->v23" from="v10" to="v23"/>
+ <arc name="v14->v25" from="v14" to="v25"/>
+ <arc name="v24->v43" from="v24" to="v43"/>
+ <arc name="v13->v30" from="v13" to="v30"/>
+ <arc name="v16->v31" from="v16" to="v31"/>
+ <arc name="v11->v31" from="v11" to="v31"/>
+ <arc name="v07->v14" from="v07" to="v14"/>
+ <arc name="v21->v43" from="v21" to="v43"/>
+ <arc name="v06->v10" from="v06" to="v10"/>
+ <arc name="v05->v15" from="v05" to="v15"/>
+ <arc name="v13->v26" from="v13" to="v26"/>
+ <arc name="v24->v32" from="v24" to="v32"/>
+ <arc name="v06->v13" from="v06" to="v13"/>
+ <arc name="v17->v25" from="v17" to="v25"/>
+ <arc name="v08->v18" from="v08" to="v18"/>
+ <arc name="v25->v36" from="v25" to="v36"/>
+ <arc name="v21->v42" from="v21" to="v42"/>
+ <arc name="v04->v18" from="v04" to="v18"/>
+ <arc name="v16->v22" from="v16" to="v22"/>
+ <arc name="v16->v30" from="v16" to="v30"/>
+ <arc name="v02->v16" from="v02" to="v16"/>
+ <arc name="v16->v29" from="v16" to="v29"/>
+ <arc name="v08->v10" from="v08" to="v10"/>
+ <arc name="v23->v42" from="v23" to="v42"/>
+ <arc name="v30->v33" from="v30" to="v33"/>
+ <arc name="v03->v10" from="v03" to="v10"/>
+ <arc name="v31->v34" from="v31" to="v34"/>
+ <arc name="v20->v38" from="v20" to="v38"/>
+ <arc name="v01->v15" from="v01" to="v15"/>
+ <arc name="v07->v11" from="v07" to="v11"/>
+ <arc name="v13->v29" from="v13" to="v29"/>
+ <arc name="v29->v34" from="v29" to="v34"/>
+ <arc name="v06->v11" from="v06" to="v11"/>
+ <arc name="v07->v13" from="v07" to="v13"/>
+ <arc name="v27->v33" from="v27" to="v33"/>
+ <arc name="v03->v17" from="v03" to="v17"/>
+ <arc name="v31->v42" from="v31" to="v42"/>
+ <arc name="v01->v12" from="v01" to="v12"/>
+ <arc name="v12->v28" from="v12" to="v28"/>
+ <arc name="v26->v42" from="v26" to="v42"/>
+ <arc name="v08->v14" from="v08" to="v14"/>
+ <arc name="v25->v42" from="v25" to="v42"/>
+ <arc name="v31->v40" from="v31" to="v40"/>
+ <arc name="v12->v21" from="v12" to="v21"/>
+ <arc name="v15->v25" from="v15" to="v25"/>
+ <arc name="v27->v37" from="v27" to="v37"/>
+ <arc name="v28->v35" from="v28" to="v35"/>
+ <arc name="v11->v27" from="v11" to="v27"/>
+ <arc name="v22->v38" from="v22" to="v38"/>
+ <arc name="v09->v30" from="v09" to="v30"/>
+ <arc name="v04->v16" from="v04" to="v16"/>
+ <arc name="v11->v25" from="v11" to="v25"/>
+ <arc name="v24->v38" from="v24" to="v38"/>
+ <arc name="v29->v43" from="v29" to="v43"/>
+ <arc name="v04->v17" from="v04" to="v17"/>
+ <arc name="v06->v18" from="v06" to="v18"/>
+ <arc name="v03->v18" from="v03" to="v18"/>
+ <arc name="v27->v35" from="v27" to="v35"/>
+ <arc name="v14->v23" from="v14" to="v23"/>
+ <arc name="v05->v19" from="v05" to="v19"/>
+ <arc name="v19->v23" from="v19" to="v23"/>
+ <arc name="v25->v40" from="v25" to="v40"/>
+ <arc name="v30->v37" from="v30" to="v37"/>
+ <arc name="v08->v17" from="v08" to="v17"/>
+ <arc name="v01->v19" from="v01" to="v19"/>
+ <arc name="v07->v19" from="v07" to="v19"/>
+ <arc name="v21->v34" from="v21" to="v34"/>
+ <arc name="v07->v10" from="v07" to="v10"/>
+ <arc name="v23->v38" from="v23" to="v38"/>
+ <arc name="v26->v33" from="v26" to="v33"/>
+</graph>
