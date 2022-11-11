@@ -333,7 +333,7 @@ void initialize(string filepath)
 	shuffle[1] = int((right_num - movable[1]) * alpha);
 
 	// int Data1[left_num][left_num] = {-1};
-	vector<vector<int>> Data1(left_num,vector<int>(left_num,-1));
+	vector<vector<int>> Data1(left_num, vector<int>(left_num, -1));
 	for (int i = 0; i < left_num; i++)
 	{
 		for (int j = 0; j < left_num; j++)
@@ -381,7 +381,7 @@ void initialize(string filepath)
 	int s = 0;
 
 	s = 0;
-	vector<vector<int>> Right1(right_num,vector<int>(right_num,0));
+	vector<vector<int>> Right1(right_num, vector<int>(right_num, 0));
 	// int Right1[right_num][right_num] = {0};
 	for (int i = 0; i < right_num; i++)
 	{
@@ -542,10 +542,10 @@ void dp(int t) // t即type b表示层数
 		}
 	}
 	// ofstream fout("Ddpls.out");
-    // for(int i=0;i<left_num;i++)
-    //     for(int j=0;j<left_num;j++)
-    //         fout<<-delta[0][i][j]<<endl;
-    // cout<<"finish\n";int aaa;cin>>aaa;
+	// for(int i=0;i<left_num;i++)
+	//     for(int j=0;j<left_num;j++)
+	//         fout<<-delta[0][i][j]<<endl;
+	// cout<<"finish\n";int aaa;cin>>aaa;
 	//下面进行动态规划，获得最优运动
 	int dir[size[t]] = {0};
 	int behind[size[t]] = {0};
@@ -906,7 +906,7 @@ void restorebest()
 		}
 	}
 }
-int main(int argc,char ** argv)
+int main(int argc, char **argv)
 {
 	// ifstream fq;
 	// //	string source;
@@ -936,19 +936,20 @@ int main(int argc,char ** argv)
 		bestfinish = clock();
 		datainit();
 		int cac = bestnow;
-		int runtimes=0;
+		int runtimes = 0;
 		while (counttime(st, ed) < timelimit)
 		{
 			int a = 10;
-			int cnt=0;
+			int cnt = 0;
 			while (a != bestnow)
 			{
 				a = bestnow;
 				dp(0);
 				dp(1);
-				cnt+=2;
+				cnt += 2;
 				ed = system_clock::now();
-				if(counttime(st, ed) >= timelimit)	break;
+				if (counttime(st, ed) >= timelimit)
+					break;
 			}
 			if (a <= besthistory)
 			{

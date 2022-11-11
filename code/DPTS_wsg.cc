@@ -1,48 +1,47 @@
-#include<iostream>
-#include<cstring>
-#include<stdlib.h>
-#include<stdio.h>
-#include<fstream>
-#include<string>
-#include<cmath>
-#include<math.h>
-#include<time.h>
+#include <iostream>
+#include <cstring>
+#include <stdlib.h>
+#include <stdio.h>
+#include <fstream>
+#include <string>
+#include <cmath>
+#include <math.h>
+#include <time.h>
 using namespace std;
-const int timelimit = 5000;//最优解
+const int timelimit = 5000; //最优解
 const int level = 2;
 const int MaxN = 400;
 const double alpha = 0.8;
-int shuffle[level] = { 0,0 };
-//int size[level] = {377,94};//每一层节点个数
-//int movable[level] = {263,65};//每一层不可动节点个数（相应节点编号为0~n-1）
-int size1[level] = { 0,0 };//每一层节点个数
-int immovable[level] = { 0,0 };//每一层不可动节点个数（相应节点编号为0~n-1）
-int pos[level][MaxN] = { 0 };//每个位置上的节点编号
-int loc[level][MaxN] = { 0 };//每个编号的节点位置
-int evmatrix[level][MaxN][MaxN] = { 0 };//评估矩阵，【i】【j】表示i在j前的交叉数
-int delta[level][MaxN][MaxN] = { 0 }; //移动的评估矩阵，【i】【j】表示j放到i前（后）的交叉变化数，优化则为正
+int shuffle[level] = {0, 0};
+// int size[level] = {377,94};//每一层节点个数
+// int movable[level] = {263,65};//每一层不可动节点个数（相应节点编号为0~n-1）
+int size1[level] = {0, 0};             //每一层节点个数
+int immovable[level] = {0, 0};         //每一层不可动节点个数（相应节点编号为0~n-1）
+int pos[level][MaxN] = {0};            //每个位置上的节点编号
+int loc[level][MaxN] = {0};            //每个编号的节点位置
+int evmatrix[level][MaxN][MaxN] = {0}; //评估矩阵，【i】【j】表示i在j前的交叉数
+int delta[level][MaxN][MaxN] = {0};    //移动的评估矩阵，【i】【j】表示j放到i前（后）的交叉变化数，优化则为正
 
 // 这俩个数组实际没有发挥作用
-int cpoint[level][MaxN][MaxN] = { 0 };//向右的连接节点编号
-int nc[level][MaxN] = { 0 };//向右的连接节点个数
-
+int cpoint[level][MaxN][MaxN] = {0}; //向右的连接节点编号
+int nc[level][MaxN] = {0};           //向右的连接节点个数
 
 int bestnow = 10000000;
 int besthistory = 10000000;
-int bestpos[level][MaxN] = { 0 };
-int bestloc[level][MaxN] = { 0 };
-int maxevmatrix[level][MaxN][MaxN] = { 0 };//最优解记录
+int bestpos[level][MaxN] = {0};
+int bestloc[level][MaxN] = {0};
+int maxevmatrix[level][MaxN][MaxN] = {0}; //最优解记录
 
-int Data[MaxN][MaxN] = { -1 };
-int Right[MaxN][MaxN] = { -1 };
-int num_connect[MaxN] = { 0 };
-int right_connect[MaxN] = { 0 };//以上四个为二层时方便处理的单元集合
+int Data[MaxN][MaxN] = {-1};
+int Right[MaxN][MaxN] = {-1};
+int num_connect[MaxN] = {0};
+int right_connect[MaxN] = {0}; //以上四个为二层时方便处理的单元集合
 
-int tenure = 1;   // 禁忌步长
-const int length = 1000000;  // 禁忌列表长度(该值很大影响程度也有限，因为受步长约束）
-int List_len[level] = { 0 }; //左、右两侧禁忌列表中的元素个数
-int Tabulist0[length][3] = { -1 }; //设置禁忌列表
-int Tabulist1[length][3] = { -1 };
+int tenure = 1;                  // 禁忌步长
+const int length = 1000000;      // 禁忌列表长度(该值很大影响程度也有限，因为受步长约束）
+int List_len[level] = {0};       //左、右两侧禁忌列表中的元素个数
+int Tabulist0[length][3] = {-1}; //设置禁忌列表
+int Tabulist1[length][3] = {-1};
 int times = 0; //单层图的搜索次数
 
 int max(int a, int b, int c)
@@ -58,22 +57,22 @@ void orig()
 {
     //目的是更新两个pos、loc
     //再赋值evmatrix
-//	for(int i = movable[0];i<size[0];i++) //取出左点
-//	{
-//		pos[0][i] = -1;
-//	}
-    int minnum[MaxN] = { 0 };
-    int minplace[MaxN] = { 0 };
+    //	for(int i = movable[0];i<size[0];i++) //取出左点
+    //	{
+    //		pos[0][i] = -1;
+    //	}
+    int minnum[MaxN] = {0};
+    int minplace[MaxN] = {0};
     for (int key = immovable[0]; key < size1[0]; key++)
     {
         int count = 0;
-        for (int i = 0; i < immovable[0]; i++)//初始化最初位置交叉数
+        for (int i = 0; i < immovable[0]; i++) //初始化最初位置交叉数
         {
             count += evmatrix[0][key][i];
         }
         int min = count;
         int min_place = 0;
-        for (int i = 0; i < immovable[0]; i++)//计算每个位置的交叉数
+        for (int i = 0; i < immovable[0]; i++) //计算每个位置的交叉数
         {
             count -= evmatrix[0][key][i];
             count += evmatrix[0][i][key];
@@ -90,8 +89,6 @@ void orig()
     {
         printf("%d %d\n", minnum[key], minplace[key]);
     }
-
-
 
     getchar();
 }
@@ -127,7 +124,6 @@ int findsuit(int t, int j, int i)
         {
             return 0;
         }
-
     }
     if (active(j, t))
     {
@@ -145,17 +141,17 @@ void renewEvArray(int t, int j, int i, int dir)
         if (dir == 0)
         {
             //更新矩阵
-            int counter[MaxN] = { 0 };
-            for (int k = j; k < i; k++)//k是位置
+            int counter[MaxN] = {0};
+            for (int k = j; k < i; k++) // k是位置
             {
-                for (int q = 0; q < num_connect[pos[t][k]]; q++)//对每一个夹点的邻接点
+                for (int q = 0; q < num_connect[pos[t][k]]; q++) //对每一个夹点的邻接点
                 {
-                    counter[Data[pos[t][k]][q + 2]]++;//被夹点连接的点记录数自增
+                    counter[Data[pos[t][k]][q + 2]]++; //被夹点连接的点记录数自增
                 }
             }
-            for (int k = 0; k < num_connect[pos[t][i]]; k++)//对移动点的每一个节点
+            for (int k = 0; k < num_connect[pos[t][i]]; k++) //对移动点的每一个节点
             {
-                for (int q = 0; q < size1[1 - t]; q++)//对右侧每一个被夹点连接的点
+                for (int q = 0; q < size1[1 - t]; q++) //对右侧每一个被夹点连接的点
                 {
                     if (counter[q] != 0)
                     {
@@ -168,17 +164,17 @@ void renewEvArray(int t, int j, int i, int dir)
         else if (dir == 1)
         {
             //更新矩阵
-            int counter[MaxN] = { 0 };
-            for (int k = j + 1; k <= i; k++)//k是位置
+            int counter[MaxN] = {0};
+            for (int k = j + 1; k <= i; k++) // k是位置
             {
-                for (int q = 0; q < num_connect[pos[t][k]]; q++)//对每一个夹点的邻接点
+                for (int q = 0; q < num_connect[pos[t][k]]; q++) //对每一个夹点的邻接点
                 {
-                    counter[Data[pos[t][k]][q + 2]]++;//被夹点连接的点记录数自增
+                    counter[Data[pos[t][k]][q + 2]]++; //被夹点连接的点记录数自增
                 }
             }
-            for (int k = 0; k < num_connect[pos[t][j]]; k++)//对移动点的每一个节点
+            for (int k = 0; k < num_connect[pos[t][j]]; k++) //对移动点的每一个节点
             {
-                for (int q = 0; q < size1[1 - t]; q++)//对右侧每一个被夹点连接的点
+                for (int q = 0; q < size1[1 - t]; q++) //对右侧每一个被夹点连接的点
                 {
                     if (counter[q] != 0)
                     {
@@ -193,18 +189,18 @@ void renewEvArray(int t, int j, int i, int dir)
     {
         if (dir == 0)
         {
-            int counter[MaxN] = { 0 };
-            for (int k = j; k < i; k++)//k是位置
+            int counter[MaxN] = {0};
+            for (int k = j; k < i; k++) // k是位置
             {
-                for (int q = 0; q < right_connect[pos[t][k]]; q++)//对每一个夹点的邻接点
+                for (int q = 0; q < right_connect[pos[t][k]]; q++) //对每一个夹点的邻接点
                 {
 
-                    counter[Right[pos[t][k]][q + 2]]++;//被夹点连接的点记录数自增
+                    counter[Right[pos[t][k]][q + 2]]++; //被夹点连接的点记录数自增
                 }
             }
-            for (int k = 0; k < right_connect[pos[t][i]]; k++)//对移动点的每一个节点
+            for (int k = 0; k < right_connect[pos[t][i]]; k++) //对移动点的每一个节点
             {
-                for (int q = 0; q < size1[1 - t]; q++)//对右侧每一个被夹点连接的点
+                for (int q = 0; q < size1[1 - t]; q++) //对右侧每一个被夹点连接的点
                 {
                     if (counter[q] != 0)
                     {
@@ -217,17 +213,17 @@ void renewEvArray(int t, int j, int i, int dir)
         else if (dir == 1)
         {
             //更新矩阵
-            int counter[MaxN] = { 0 };
-            for (int k = j + 1; k <= i; k++)//k是位置
+            int counter[MaxN] = {0};
+            for (int k = j + 1; k <= i; k++) // k是位置
             {
-                for (int q = 0; q < right_connect[pos[t][k]]; q++)//对每一个夹点的邻接点
+                for (int q = 0; q < right_connect[pos[t][k]]; q++) //对每一个夹点的邻接点
                 {
-                    counter[Right[pos[t][k]][q + 2]]++;//被夹点连接的点记录数自增
+                    counter[Right[pos[t][k]][q + 2]]++; //被夹点连接的点记录数自增
                 }
             }
-            for (int k = 0; k < right_connect[pos[t][j]]; k++)//对移动点的每一个节点
+            for (int k = 0; k < right_connect[pos[t][j]]; k++) //对移动点的每一个节点
             {
-                for (int q = 0; q < size1[1 - t]; q++)//对右侧每一个被夹点连接的点
+                for (int q = 0; q < size1[1 - t]; q++) //对右侧每一个被夹点连接的点
                 {
                     if (counter[q] != 0)
                     {
@@ -238,16 +234,15 @@ void renewEvArray(int t, int j, int i, int dir)
             }
         }
     }
-
 }
-void  initialize(char* string)
+void initialize(char *string)
 {
     srand((int)time(NULL));
     ifstream fq;
     cout << string << endl;
     fq.open(string, ios::in);
     if (!fq.is_open())
-        cout << "open file failure 2" << endl; //f:\\incgraph_2_0.06_5_30_1.20_1.txt
+        cout << "open file failure 2" << endl; // f:\\incgraph_2_0.06_5_30_1.20_1.txt
     int g1 = 0;
     int a;
 
@@ -258,8 +253,8 @@ void  initialize(char* string)
 
     while (!fq.eof())
     {
-        char buffer[256] = { '\0' };
-        fq.getline(buffer, 500);  //读入每行
+        char buffer[256] = {'\0'};
+        fq.getline(buffer, 500); //读入每行
 
         int tmp2 = 0;
         for (int i = 0; i < 255; i++)
@@ -287,7 +282,7 @@ void  initialize(char* string)
                     }
                     if (tmp1 > 1 && tmp1 < left_num + 2)
                     {
-                        Data[tmp1 - 2][tmp2] = a;//
+                        Data[tmp1 - 2][tmp2] = a; //
                         tmp2++;
                     }
                     if (tmp1 >= left_num + 2)
@@ -332,7 +327,7 @@ void  initialize(char* string)
     shuffle[0] = int((left_num - immovable[0]) * alpha);
     shuffle[1] = int((right_num - immovable[1]) * alpha);
 
-    int Data1[MaxN][MaxN] = { -1 };
+    int Data1[MaxN][MaxN] = {-1};
     for (int i = 0; i < left_num; i++)
     {
         for (int j = 0; j < left_num; j++)
@@ -358,7 +353,7 @@ void  initialize(char* string)
     //左侧完成更新
     //以上实现读取数据
     //以下进行数据规定化,包括归零化，计算另一边的邻接点
-    int set[MaxN * 2] = { 0 };
+    int set[MaxN * 2] = {0};
 
     for (int i = 0; i < right_num; i++)
     {
@@ -381,7 +376,7 @@ void  initialize(char* string)
 
     s = 0;
 
-    int Right1[MaxN][MaxN] = { 0 };
+    int Right1[MaxN][MaxN] = {0};
     for (int i = 0; i < right_num; i++)
     {
         for (int j = 0; j < right_connect[i] + 2; j++)
@@ -397,7 +392,7 @@ void  initialize(char* string)
             Data[i][j] = Right[Data[i][j]][1];
         }
     }
-    int rightem[MaxN] = { 0 };
+    int rightem[MaxN] = {0};
     for (int i = 0; i < right_num; i++)
     {
         rightem[Right[i][1]] = i;
@@ -452,7 +447,6 @@ void  initialize(char* string)
         pos[1][i] = i;
         loc[1][i] = i;
     }
-
 }
 void datainit()
 {
@@ -471,9 +465,9 @@ void datainit()
                 {
                     for (int n = 0; n < right_connect[j]; n++)
                     {
-                        if ((loc[0][Right[i][m + 2]] - loc[0][Right[j][n + 2]]) > 0)//若满足位置关系
+                        if ((loc[0][Right[i][m + 2]] - loc[0][Right[j][n + 2]]) > 0) //若满足位置关系
                         {
-                            evmatrix[1][i][j]++;//
+                            evmatrix[1][i][j]++; //
                         }
                     }
                 }
@@ -492,18 +486,17 @@ void datainit()
                 {
                     for (int n = 0; n < num_connect[j]; n++)
                     {
-                        if ((loc[1][Data[i][m + 2]] - loc[1][Data[j][n + 2]]) > 0)//若满足位置关系
+                        if ((loc[1][Data[i][m + 2]] - loc[1][Data[j][n + 2]]) > 0) //若满足位置关系
                         {
-                            evmatrix[0][i][j]++;//
+                            evmatrix[0][i][j]++; //
                         }
                     }
                 }
             }
         }
     }
-
 }
-void dp(int t)//t即type b表示层数
+void dp(int t) // t即type b表示层数
 {
     int left_num = size1[0];
     int right_num = size1[1];
@@ -544,12 +537,12 @@ void dp(int t)//t即type b表示层数
     }
 
     //下面进行动态规划，获得最优运动
-    int dir[MaxN] = { 0 };
-    int behind[MaxN] = { 0 };
-    int cross_delta[MaxN] = { 0 };
+    int dir[MaxN] = {0};
+    int behind[MaxN] = {0};
+    int cross_delta[MaxN] = {0};
     int count = 0;
 
-    for (int i = 1; i < size1[t]; i++)//内部动态规划 !!!!0-30，from 1 effective
+    for (int i = 1; i < size1[t]; i++) //内部动态规划 !!!!0-30，from 1 effective
     {
         int rem = -1;
         int in_tmp_delta = -10000;
@@ -562,28 +555,36 @@ void dp(int t)//t即type b表示层数
             tmp_dir = findsuit(t, j, i); // 确定三个邻域动作中那个增益最大
             switch (tmp_dir)
             {
-            case -1:max = 0; break;
-            case 0:max = delta[t][j][i]; break;
-            case 1:max = delta[t][i][j]; break;
-            case 2:max = delta[t][j][i] + delta[t][i - 1][j]; break;
+            case -1:
+                max = 0;
+                break;
+            case 0:
+                max = delta[t][j][i];
+                break;
+            case 1:
+                max = delta[t][i][j];
+                break;
+            case 2:
+                max = delta[t][j][i] + delta[t][i - 1][j];
+                break;
             }
             if (j == 0)
                 count = max;
             else
                 count = cross_delta[j - 1] + max; // 即式（12）
 
-            //transact(j+1,i)
-            // 优于此前最优解，记录下各变量的值
+            // transact(j+1,i)
+            //  优于此前最优解，记录下各变量的值
             if (count >= in_tmp_delta)
             {
-                in_tmp_delta = count;//记录一重值
+                in_tmp_delta = count; //记录一重值
                 in_tmpj = j;
                 in_dir = tmp_dir;
             }
         }
-        cross_delta[i] = in_tmp_delta;  //最优动作改进量
-        behind[i] = in_tmpj;            //确定节点j(和相应的i对应)
-        dir[i] = in_dir;                //确定最优动作
+        cross_delta[i] = in_tmp_delta; //最优动作改进量
+        behind[i] = in_tmpj;           //确定节点j(和相应的i对应)
+        dir[i] = in_dir;               //确定最优动作
     }
 
     int i = size1[t] - 1;
@@ -591,8 +592,9 @@ void dp(int t)//t即type b表示层数
     // 上面已经通过动态规划确定了这一步最优的邻域动作
     // 下面就是实施这一动作，对位置数组已经评估矩阵的值进行更新
     // 每个条件语句里的代码都是完成了某个插入操作，也就是将数组中的某个值移动了位置
-    if (cd >= 0) {
-        while (i > 0)//实施序列变换，并更新矩阵
+    if (cd >= 0)
+    {
+        while (i > 0) //实施序列变换，并更新矩阵
         {
             int j = behind[i];
             int tmp = pos[t][i];
@@ -610,7 +612,6 @@ void dp(int t)//t即type b表示层数
                 }
                 // 此前i位置的值放到j位置
                 pos[t][j] = tmp;
-
             }
             // j移动到i前
             else if (dir[i] == 1)
@@ -646,11 +647,11 @@ void dp(int t)//t即type b表示层数
         }
     }
     // 根据pos更新loc
-    for (int i = 0; i < size1[t]; i++)//计算loc
+    for (int i = 0; i < size1[t]; i++) //计算loc
     {
         loc[t][pos[t][i]] = i;
     }
-    for (int i = 0; i < size1[1 - t]; i++)//计算loc
+    for (int i = 0; i < size1[1 - t]; i++) //计算loc
     {
         loc[1 - t][pos[1 - t][i]] = i;
     }
@@ -674,14 +675,15 @@ void dp(int t)//t即type b表示层数
     }
     int s = 0;
 
-    //printf("\nt = %d,cross1 = %d; cross2 = %d,delta = %d", t, crosssum, crosssum1, cd);
+    // printf("\nt = %d,cross1 = %d; cross2 = %d,delta = %d", t, crosssum, crosssum1, cd);
     bestnow = crosssum;
-    if (bestnow < besthistory) {
-        //printf("\n当前besthistory = %d", bestnow);
+    if (bestnow < besthistory)
+    {
+        // printf("\n当前besthistory = %d", bestnow);
     }
 }
 
-void dpts(int t)//t即type b表示层数
+void dpts(int t) // t即type b表示层数
 {
     int left_num = size1[0];
     int right_num = size1[1];
@@ -722,13 +724,13 @@ void dpts(int t)//t即type b表示层数
     }
 
     //下面进行动态规划，获得最优运动
-    int dir[MaxN] = { 0 };
-    int behind[MaxN] = { 0 };
-    int cross_delta[MaxN] = { 0 };
+    int dir[MaxN] = {0};
+    int behind[MaxN] = {0};
+    int cross_delta[MaxN] = {0};
     int count = 0;
 
     //做两次动态规划来判断是否突破禁忌
-    for (int i = 1; i < size1[t]; i++)//内部动态规划 !!!!0-30，from 1 effective
+    for (int i = 1; i < size1[t]; i++) //内部动态规划 !!!!0-30，from 1 effective
     {
         int rem = -1;
         int in_tmp_delta = -10000;
@@ -741,54 +743,67 @@ void dpts(int t)//t即type b表示层数
             tmp_dir = findsuit(t, j, i); // 确定三个邻域动作中那个增益最大
             switch (tmp_dir)
             {
-            case -1:max = 0; break;
-            case 0:max = delta[t][j][i]; break;
-            case 1:max = delta[t][i][j]; break;
-            case 2:max = delta[t][j][i] + delta[t][i - 1][j]; break;
+            case -1:
+                max = 0;
+                break;
+            case 0:
+                max = delta[t][j][i];
+                break;
+            case 1:
+                max = delta[t][i][j];
+                break;
+            case 2:
+                max = delta[t][j][i] + delta[t][i - 1][j];
+                break;
             }
             if (j == 0)
                 count = max;
             else
                 count = cross_delta[j - 1] + max; // 即式（12）
 
-            //transact(j+1,i)
-            // 优于此前最优解，记录下各变量的值
+            // transact(j+1,i)
+            //  优于此前最优解，记录下各变量的值
             if (count >= in_tmp_delta)
             {
-                in_tmp_delta = count;//记录一重值
+                in_tmp_delta = count; //记录一重值
                 in_tmpj = j;
                 in_dir = tmp_dir;
             }
         }
-        cross_delta[i] = in_tmp_delta;  //最优动作改进量
-        behind[i] = in_tmpj;            //确定节点j(和相应的i对应)
-        dir[i] = in_dir;                //确定最优动作
+        cross_delta[i] = in_tmp_delta; //最优动作改进量
+        behind[i] = in_tmpj;           //确定节点j(和相应的i对应)
+        dir[i] = in_dir;               //确定最优动作
     }
 
     int i = size1[t] - 1;
     int cd0 = cross_delta[i];
-    //printf("\n非禁忌的改进量为 = %d\n", cd0);
-    if (cd0 >= 0) {  //如果能改进最优解，无视禁忌
-    // 上面已经通过动态规划确定了这一步最优的邻域动作
-    // 下面就是实施这一动作，对位置数组已经评估矩阵的值进行更新
-    // 每个条件语句里的代码都是完成了某个插入操作，也就是将数组中的某个值移动了位置
-        while (i > 0)//实施序列变换，并更新矩阵
+    // printf("\n非禁忌的改进量为 = %d\n", cd0);
+    if (cd0 >= 0)
+    {                 //如果能改进最优解，无视禁忌
+                      // 上面已经通过动态规划确定了这一步最优的邻域动作
+                      // 下面就是实施这一动作，对位置数组已经评估矩阵的值进行更新
+                      // 每个条件语句里的代码都是完成了某个插入操作，也就是将数组中的某个值移动了位置
+        while (i > 0) //实施序列变换，并更新矩阵
         {
             int j = behind[i];
             int tmp = pos[t][i];
 
-            if (t == 0) {              //加入禁忌点
+            if (t == 0)
+            { //加入禁忌点
                 int K = List_len[t];
-                if (K < length) {
+                if (K < length)
+                {
                     Tabulist0[K][0] = j;
                     Tabulist0[K][1] = i;
                     Tabulist0[K][2] = times;
                 }
-                else {
+                else
+                {
                     Tabulist0[length - 1][0] = j;
                     Tabulist0[length - 1][1] = i;
                     Tabulist0[length - 1][2] = times;
-                    for (i = 1; i < length; i++) {
+                    for (i = 1; i < length; i++)
+                    {
                         Tabulist0[i - 1][0] = Tabulist0[i][0];
                         Tabulist0[i - 1][1] = Tabulist0[i][1];
                         Tabulist0[i - 1][2] = Tabulist0[i][2];
@@ -796,18 +811,22 @@ void dpts(int t)//t即type b表示层数
                 }
                 List_len[t] += 1;
             }
-            if (t == 1) {              //加入禁忌点
+            if (t == 1)
+            { //加入禁忌点
                 int K = List_len[t];
-                if (K < length) {
+                if (K < length)
+                {
                     Tabulist1[K][0] = j;
                     Tabulist1[K][1] = i;
                     Tabulist1[K][2] = times;
                 }
-                else {
+                else
+                {
                     Tabulist1[length - 1][0] = j;
                     Tabulist1[length - 1][1] = i;
                     Tabulist1[length - 1][2] = times;
-                    for (i = 1; i < length; i++) {
+                    for (i = 1; i < length; i++)
+                    {
                         Tabulist1[i - 1][0] = Tabulist1[i][0];
                         Tabulist1[i - 1][1] = Tabulist1[i][1];
                         Tabulist1[i - 1][2] = Tabulist1[i][2];
@@ -829,7 +848,6 @@ void dpts(int t)//t即type b表示层数
                 }
                 // 此前i位置的值放到j位置
                 pos[t][j] = tmp;
-
             }
             // j移动到i前
             else if (dir[i] == 1)
@@ -864,8 +882,9 @@ void dpts(int t)//t即type b表示层数
             i = j - 1;
         }
     }
-    else { //如果不能改进最优解，动态规划时考虑禁忌，挑选非禁忌的最优解
-        for (int i = 1; i < size1[t]; i++)//内部动态规划 !!!!0-30，from 1 effective
+    else
+    {                                      //如果不能改进最优解，动态规划时考虑禁忌，挑选非禁忌的最优解
+        for (int i = 1; i < size1[t]; i++) //内部动态规划 !!!!0-30，from 1 effective
         {
             int rem = -1;
             int in_tmp_delta = -10000;
@@ -878,31 +897,46 @@ void dpts(int t)//t即type b表示层数
                 tmp_dir = findsuit(t, j, i); // 确定三个邻域动作中那个增益最大
                 switch (tmp_dir)
                 {
-                case -1:max = 0; break;
-                case 0:max = delta[t][j][i]; break;
-                case 1:max = delta[t][i][j]; break;
-                case 2:max = delta[t][j][i] + delta[t][i - 1][j]; break;
+                case -1:
+                    max = 0;
+                    break;
+                case 0:
+                    max = delta[t][j][i];
+                    break;
+                case 1:
+                    max = delta[t][i][j];
+                    break;
+                case 2:
+                    max = delta[t][j][i] + delta[t][i - 1][j];
+                    break;
                 }
 
                 //*如果是禁忌节点对，相应动作赋值为0
-                int judge = 0;  //判断是否被禁忌的条件
+                int judge = 0; //判断是否被禁忌的条件
                 judge = 0;
 
-                if (t == 0) {
-                    for (int n = 0; n < min(List_len[t], length); n++) {
-                        if (j == Tabulist0[n][0] && i == Tabulist0[n][1] && times - Tabulist0[n][2] <= tenure) {
+                if (t == 0)
+                {
+                    for (int n = 0; n < min(List_len[t], length); n++)
+                    {
+                        if (j == Tabulist0[n][0] && i == Tabulist0[n][1] && times - Tabulist0[n][2] <= tenure)
+                        {
                             judge = judge + 1;
                         }
                     }
                 }
-                if (t == 1) {
-                    for (int n = 0; n < min(List_len[t], length); n++) {
-                        if (j == Tabulist1[n][0] && i == Tabulist1[n][1] && times - Tabulist1[n][2] <= tenure) {
+                if (t == 1)
+                {
+                    for (int n = 0; n < min(List_len[t], length); n++)
+                    {
+                        if (j == Tabulist1[n][0] && i == Tabulist1[n][1] && times - Tabulist1[n][2] <= tenure)
+                        {
                             judge = judge + 1;
                         }
                     }
                 }
-                if (judge != 0) { //如果是禁忌的，该节点对之间的动作改变量赋值为0
+                if (judge != 0)
+                { //如果是禁忌的，该节点对之间的动作改变量赋值为0
                     max = 0;
                 }
 
@@ -911,37 +945,41 @@ void dpts(int t)//t即type b表示层数
                 else
                     count = cross_delta[j - 1] + max; // 即式（12）
 
-                //transact(j+1,i)
-                // 优于此前最优解，记录下各变量的值
+                // transact(j+1,i)
+                //  优于此前最优解，记录下各变量的值
                 if (count >= in_tmp_delta)
                 {
-                    in_tmp_delta = count;//记录一重值
+                    in_tmp_delta = count; //记录一重值
                     in_tmpj = j;
                     in_dir = tmp_dir;
                 }
             }
-            cross_delta[i] = in_tmp_delta;  //最优动作改进量
-            behind[i] = in_tmpj;            //确定节点j(和相应的i对应)
-            dir[i] = in_dir;                //确定最优动作
+            cross_delta[i] = in_tmp_delta; //最优动作改进量
+            behind[i] = in_tmpj;           //确定节点j(和相应的i对应)
+            dir[i] = in_dir;               //确定最优动作
         }
         int i = size1[t] - 1;
-        while (i > 0)//实施序列变换，并更新矩阵
+        while (i > 0) //实施序列变换，并更新矩阵
         {
             int j = behind[i];
             int tmp = pos[t][i];
 
-            if (t == 0) {              //加入禁忌点
+            if (t == 0)
+            { //加入禁忌点
                 int K = List_len[t];
-                if (K < length) {
+                if (K < length)
+                {
                     Tabulist0[K][0] = j;
                     Tabulist0[K][1] = i;
                     Tabulist0[K][2] = times;
                 }
-                else {
+                else
+                {
                     Tabulist0[length - 1][0] = j;
                     Tabulist0[length - 1][1] = i;
                     Tabulist0[length - 1][2] = times;
-                    for (i = 1; i < length; i++) {
+                    for (i = 1; i < length; i++)
+                    {
                         Tabulist0[i - 1][0] = Tabulist0[i][0];
                         Tabulist0[i - 1][1] = Tabulist0[i][1];
                         Tabulist0[i - 1][2] = Tabulist0[i][2];
@@ -949,18 +987,22 @@ void dpts(int t)//t即type b表示层数
                 }
                 List_len[t] += 1;
             }
-            if (t == 1) {              //加入禁忌点
+            if (t == 1)
+            { //加入禁忌点
                 int K = List_len[t];
-                if (K < length) {
+                if (K < length)
+                {
                     Tabulist1[K][0] = j;
                     Tabulist1[K][1] = i;
                     Tabulist1[K][2] = times;
                 }
-                else {
+                else
+                {
                     Tabulist1[length - 1][0] = j;
                     Tabulist1[length - 1][1] = i;
                     Tabulist1[length - 1][2] = times;
-                    for (i = 1; i < length; i++) {
+                    for (i = 1; i < length; i++)
+                    {
                         Tabulist1[i - 1][0] = Tabulist1[i][0];
                         Tabulist1[i - 1][1] = Tabulist1[i][1];
                         Tabulist1[i - 1][2] = Tabulist1[i][2];
@@ -982,7 +1024,6 @@ void dpts(int t)//t即type b表示层数
                 }
                 // 此前i位置的值放到j位置
                 pos[t][j] = tmp;
-
             }
             // j移动到i前
             else if (dir[i] == 1)
@@ -1025,11 +1066,11 @@ void dpts(int t)//t即type b表示层数
     // 每个条件语句里的代码都是完成了某个插入操作，也就是将数组中的某个值移动了位置
 
     // 根据pos更新loc
-    for (int i = 0; i < size1[t]; i++)//计算loc
+    for (int i = 0; i < size1[t]; i++) //计算loc
     {
         loc[t][pos[t][i]] = i;
     }
-    for (int i = 0; i < size1[1 - t]; i++)//计算loc
+    for (int i = 0; i < size1[1 - t]; i++) //计算loc
     {
         loc[1 - t][pos[1 - t][i]] = i;
     }
@@ -1053,10 +1094,11 @@ void dpts(int t)//t即type b表示层数
     }
     int s = 0;
 
-    //printf("\nt = %d,cross1 = %d; cross2 = %d,delta = %d", t, crosssum, crosssum1, cd);
+    // printf("\nt = %d,cross1 = %d; cross2 = %d,delta = %d", t, crosssum, crosssum1, cd);
     bestnow = crosssum;
-    if (bestnow < besthistory) {
-        //printf("\n当前besthistory = %d", bestnow);
+    if (bestnow < besthistory)
+    {
+        // printf("\n当前besthistory = %d", bestnow);
     }
 }
 
@@ -1065,7 +1107,7 @@ void extract()
 {
     int left_num = size1[0];
     int right_num = size1[1];
-    int tmppoint[MaxN] = { 0 };//记录位置
+    int tmppoint[MaxN] = {0}; //记录位置
     int count = 0;
     for (int i = 0; i < left_num; i++)
     {
@@ -1089,7 +1131,7 @@ void extract()
                 tb = rand() % count;
             } while (ta == tb);
 
-            if (ta > tb)//让ta较小
+            if (ta > tb) //让ta较小
             {
                 int q = ta;
                 ta = tb;
@@ -1098,14 +1140,13 @@ void extract()
             int i = tmppoint[tb];
             int j = tmppoint[ta];
             //进行交换和更新
-            int	tmp = pos[t][i];
+            int tmp = pos[t][i];
             renewEvArray(t, j, i, 0);
             for (int k = i; k > j; k--)
             {
                 pos[t][k] = pos[t][k - 1];
             }
             pos[t][j] = tmp;
-
 
             tmp = pos[t][j + 1];
             renewEvArray(t, j + 1, i, 1);
@@ -1120,7 +1161,8 @@ void extract()
         {
             int miku = rand() % left_num;
 
-            do {
+            do
+            {
                 miku = rand() % left_num;
             } while (pos[0][miku] < immovable[0]);
             int mov = miku;
@@ -1139,16 +1181,12 @@ void extract()
                 }
                 pos[0][bi] = tmp;
             }
-
-
-
         }
         for (int i = 0; i < left_num; i++)
         {
             loc[0][pos[0][i]] = i;
         }
     }
-
 
     //右侧
     count = 0;
@@ -1172,7 +1210,7 @@ void extract()
                 tb = rand() % count;
             } while (ta == tb);
 
-            if (ta > tb)//让ta较小
+            if (ta > tb) //让ta较小
             {
                 int q = ta;
                 ta = tb;
@@ -1181,14 +1219,13 @@ void extract()
             int i = tmppoint[tb];
             int j = tmppoint[ta];
             //进行交换和更新
-            int	tmp = pos[t][i];
+            int tmp = pos[t][i];
             renewEvArray(t, j, i, 0);
             for (int k = i; k > j; k--)
             {
                 pos[t][k] = pos[t][k - 1];
             }
             pos[t][j] = tmp;
-
 
             tmp = pos[t][j + 1];
             renewEvArray(t, j + 1, i, 1);
@@ -1203,7 +1240,8 @@ void extract()
         {
             int miku = rand() % right_num;
 
-            do {
+            do
+            {
                 miku = rand() % right_num;
             } while (pos[1][miku] < immovable[1]);
             int mov = miku;
@@ -1222,9 +1260,6 @@ void extract()
                 }
                 pos[1][bi] = tmp;
             }
-
-
-
         }
         for (int i = 0; i < left_num; i++)
         {
@@ -1235,7 +1270,6 @@ void extract()
     int crosssum = 0;
 
     crosssum = 0;
-
 }
 // 记录下最优解的位置和评估矩阵信息
 void storebest()
@@ -1280,7 +1314,8 @@ void renew()
                 evmatrix[i][j][k] = 0;
                 delta[i][j][k] = 0;
                 cpoint[i][j][k] = 0;
-                maxevmatrix[i][j][k] = 0;;
+                maxevmatrix[i][j][k] = 0;
+                ;
             }
         }
     }
@@ -1301,7 +1336,7 @@ void restorebest()
     }
 }
 
-int main(int argc,char **argv)
+int main(int argc, char **argv)
 {
     // ifstream fq;
     // //fstream iofile;
@@ -1309,7 +1344,7 @@ int main(int argc,char **argv)
     // if (!fq.is_open())
     //     cout << "open file failure 1" << endl; //f:\\incgraph_2_0.06_5_30_1.20_1.txt
     // // 循环读取运行不同的测试集
-    //iofile.open("result1.txt", ios::out);//创建txt文件，并以写入的模式打开
+    // iofile.open("result1.txt", ios::out);//创建txt文件，并以写入的模式打开
     // while (1)
     {
         // char a[256] = { '\0' };
@@ -1320,15 +1355,17 @@ int main(int argc,char **argv)
         // memcpy(b, a, sizeof(a));
         // b[len - 1] = '\0';
         srand((unsigned)time(NULL)); // 改变随机数种子，使每次运行结果不同
-        renew(); // 重置数组
-        initialize(argv[1]); // 读入数据及一些简单的初始化
-        datainit(); // 计算评估矩阵
+        renew();                     // 重置数组
+        initialize(argv[1]);         // 读入数据及一些简单的初始化
+        datainit();                  // 计算评估矩阵
 
         times = 0;
-        for (int i = 0; i < length; i++) {
-            for (int j = 0; j < 3; j++) {
-                Tabulist0[i][j] = { -1 };
-                Tabulist1[i][j] = { -1 };
+        for (int i = 0; i < length; i++)
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                Tabulist0[i][j] = {-1};
+                Tabulist1[i][j] = {-1};
             }
         }
         List_len[0] = 0;
@@ -1347,7 +1384,8 @@ int main(int argc,char **argv)
         int n = 0;
         while (difftime(finish, bestfinish) < timelimit)
         {
-            if (n > 1000 or difftime(finish, bestfinish) > timelimit) {
+            if (n > 1000 or difftime(finish, bestfinish) > timelimit)
+            {
                 break;
             }
             int a = 10;
@@ -1374,7 +1412,7 @@ int main(int argc,char **argv)
                 }
                 times += 1;
             }
-            //printf("\n当前a的值为%d\n", a);
+            // printf("\n当前a的值为%d\n", a);
             if (a <= besthistory)
             {
                 // 优于此前最优解，记录下最优解
@@ -1382,7 +1420,7 @@ int main(int argc,char **argv)
                 {
                     bestfinish = clock();
                     storebest();
-                    //n = 0;
+                    // n = 0;
                 }
                 // 等于此前最优解，随机确定采用原值还是现值
                 else if (rand() % 3 == 0)
@@ -1396,28 +1434,32 @@ int main(int argc,char **argv)
 
             // 随机扰乱
             extract();
-            for (int i = 0; i < length; i++) {
-                for (int j = 0; j < 3; j++) {
-                    Tabulist0[i][j] = { -1 };
-                    Tabulist1[i][j] = { -1 };
+            for (int i = 0; i < length; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    Tabulist0[i][j] = {-1};
+                    Tabulist1[i][j] = {-1};
                 }
             }
             List_len[0] = 0;
             List_len[1] = 0;
 
             n = n + 1;
-            //printf("\n我扰动%d次啦！", n);
+            // printf("\n我扰动%d次啦！", n);
 
             // 一轮结束时间记录
             finish = clock();
         }
         printf("%d %f\n", besthistory, 0.001 * (difftime(bestfinish, start) + 1));
-        for(int i=0;i<size1[0];i++) cout<<bestpos[0][i]<<endl;
-        for(int i=0;i<size1[1];i++) cout<<bestpos[1][i]<<endl;
+        for (int i = 0; i < size1[0]; i++)
+            cout << bestpos[0][i] << endl;
+        for (int i = 0; i < size1[1]; i++)
+            cout << bestpos[1][i] << endl;
 
-        //double time1 = 0.001 * (difftime(bestfinish, start) + 1);
-        //iofile << besthistory <<"  " << time1 << endl;
+        // double time1 = 0.001 * (difftime(bestfinish, start) + 1);
+        // iofile << besthistory <<"  " << time1 << endl;
     }
-    //iofile.close();
+    // iofile.close();
     return 0;
 }
