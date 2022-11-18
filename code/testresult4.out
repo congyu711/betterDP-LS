@@ -1,14 +1,14 @@
-/home/ubuntu/betterDP-LS/code//BGCMP/struct_bip_gr/Hyper_10.txt 2205440
-/home/ubuntu/betterDP-LS/code//BGCMP/struct_bip_gr/Hyper_5.txt 744
-/home/ubuntu/betterDP-LS/code//BGCMP/struct_bip_gr/Hyper_6.txt 4144
-/home/ubuntu/betterDP-LS/code//BGCMP/struct_bip_gr/Hyper_7.txt 21216
-/home/ubuntu/betterDP-LS/code//BGCMP/struct_bip_gr/Hyper_8.txt 102976
-/home/ubuntu/betterDP-LS/code//BGCMP/struct_bip_gr/Hyper_9.txt 482432
-/home/ubuntu/betterDP-LS/code//BGCMP/struct_bip_gr/Mesh30x10 3400
-/home/ubuntu/betterDP-LS/code//BGCMP/struct_bip_gr/Mesh30x15 8295
-/home/ubuntu/betterDP-LS/code//BGCMP/struct_bip_gr/Mesh30x20 15354
-/home/ubuntu/betterDP-LS/code//BGCMP/struct_bip_gr/Mesh30x25 28727
-/home/ubuntu/betterDP-LS/code//BGCMP/struct_bip_gr/Mesh40x10 4630
-/home/ubuntu/betterDP-LS/code//BGCMP/struct_bip_gr/Mesh40x20 21397
-/home/ubuntu/betterDP-LS/code//BGCMP/struct_bip_gr/Mesh40x30 47528
-/home/ubuntu/betterDP-LS/code//BGCMP/struct_bip_gr/Mesh50x20 26130
+/home/ubuntu/betterDP-LS/code//BGCMP/instances/ash85.txt, 7661, 0.378814
+/home/ubuntu/betterDP-LS/code//BGCMP/instances/bcspwr01.txt, 420, 3.28928
+/home/ubuntu/betterDP-LS/code//BGCMP/instances/can61.txt, 12478, 18.7167
+/home/ubuntu/betterDP-LS/code//BGCMP/instances/cbg_100_2.5.txt, 559, 0.871952
+/home/ubuntu/betterDP-LS/code//BGCMP/instances/curtis54.txt, 2912, 0.346598
+/home/ubuntu/betterDP-LS/code//BGCMP/instances/gent113.txt, 24864, 1.5675
+/home/ubuntu/betterDP-LS/code//BGCMP/instances/Hyper_10.txt, 2213152, 76.481
+/home/ubuntu/betterDP-LS/code//BGCMP/instances/Hyper_5.txt, 744, 0.006455
+/home/ubuntu/betterDP-LS/code//BGCMP/instances/Hyper_6.txt, 4144, 0.270856
+/home/ubuntu/betterDP-LS/code//BGCMP/instances/Hyper_7.txt, 21216, 3.41614
+/home/ubuntu/betterDP-LS/code//BGCMP/instances/Hyper_8.txt, 102976, 61.1272
+/home/ubuntu/betterDP-LS/code//BGCMP/instances/Hyper_9.txt, 482743, 4.10215
+/home/ubuntu/betterDP-LS/code//BGCMP/instances/ibm32.txt, 1295, 0.009738
+/home/ubuntu/betterDP-LS/code//BGCMP/instances/rbg_100_3.txt, 1311, 0.027918

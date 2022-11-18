@@ -152,31 +152,6 @@ void prob::randPerturbation(int lr,double p=1.0)
             Permutation[lr][i] = shuffleaux[auxsz++];
     }
 }
-void prob::randPerturbation(int lr,int p=1)
-{
-    srand(gen());
-    ///////////////////////////////////////
-    int num = (lr ? rightNum : leftNum);
-    ///////////////////////////////////////
-    vector<bool> shuffleflag(num,false);
-    auxsz = 0;
-    for (int i = 0; i < num; i++)
-    {
-        // can not move
-        if (movable[lr][Permutation[lr][i]] == 0 || auxsz<p)
-        {
-            shuffleaux[auxsz++] = Permutation[lr][i];
-            shuffleflag[Permutation[lr][i]]=true;
-        }
-    }
-    random_shuffle(Permutation[lr], Permutation[lr] + num);
-    auxsz = 0;
-    for (int i = 0; i < num; i++)
-    {
-        if (shuffleflag[Permutation[lr][i]])
-            Permutation[lr][i] = shuffleaux[auxsz++];
-    }
-}
 void prob::computeM(int lr, int num)
 {
     ///////////////////////////////////////
@@ -277,7 +252,7 @@ void prob::localsearch(bool USETS)
     int presol = 0;
     ops[0][0]=ops[0][1]=make_tuple(-1,0,0);
     auto tabu=[&](int i,int j)->void{
-        int randtmp = 7 + gen() % 5;
+        int randtmp = 17 + gen() % 5;
         if (op[i][j] == 1 && cnt - TStable[lr][Permutation[lr][i]] < randtmp)
         {
             op[i][j] = 0;
@@ -549,6 +524,8 @@ void prob::localsearch(bool USETS)
             // new opt
             if (opt > currentsol)
             {
+                ed=system_clock::now();
+                optTime=counttime(st,ed);
                 opt = currentsol;
                 ps=3;
                 memcpy(CPopt[0], Permutation[0], 4 * leftNum);
@@ -562,12 +539,11 @@ void prob::localsearch(bool USETS)
             }
             if(!USETS||dp[num-1]==0)
             {
-                opt=min(opt,currentsol);
                 memcpy(Permutation[0], CPopt[0], 4 * leftNum);
                 memcpy(Permutation[1], CPopt[1], 4 * rightNum);
-                ps++;
-                randPerturbation(0,1.0*ps/leftNum+0.1);
-                randPerturbation(1,1.0*ps/rightNum+0.1);
+                ps=min({ps*2,leftNum,rightNum});
+                randPerturbation(0,1.0*ps/leftNum);
+                randPerturbation(1,1.0*ps/rightNum);
                 // randPerturbation(0,0.1+(gen()%100)/500.0);
                 // randPerturbation(1,0.1+(gen()%100)/500.0);
 
@@ -631,16 +607,24 @@ int main(int argc,char **argv)
     ios::sync_with_stdio(false);
     static prob a;
     a.readGraph(inputPath);
-    // a.randPerturbation(0);
-    // a.randPerturbation(1);
+    a.randPerturbation(0,1.0);
+    a.randPerturbation(1,1.0);
     a.currentsol = a.getcurrentsolution();
 
+    int N=max(a.leftNum,a.rightNum);
+    if(N<=100)   timelimit=60;
+    else if(N<=200) timelimit=180;
+    else if(N<=300) timelimit=300;
+    else if(N<=400) timelimit=600;
+    else if(N<=500) timelimit=900;
+    else if(N<=600) timelimit=1800;
+    else timelimit=3600;    
     st = system_clock::now();
     a.localsearch(true);
-    a.currentsol = a.getcurrentsolution();
-    a.opt=min(a.opt,a.currentsol);
+    // a.currentsol = a.getcurrentsolution();
+    // a.opt=min(a.opt,a.currentsol);
     ed = system_clock::now();
-    testresult<<inputPath<<' '<<a.opt<<'\n';
+    testresult<<inputPath<<", "<<a.opt<<", "<<optTime<<'\n';
     // a.checkcp();
 
 
