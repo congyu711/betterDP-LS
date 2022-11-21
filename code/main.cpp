@@ -534,7 +534,7 @@ void prob::localsearch(bool USETS)
             // if TS is used, reset cnt and do it again.
             if(USETS)
             {
-                cnt+=15;  // reset TS table
+                cnt+=50;  // reset TS table
                 Delta_dp();
             }
             if(!USETS||dp[num-1]==0)
@@ -552,7 +552,7 @@ void prob::localsearch(bool USETS)
                 computeM(1,rightNum);
                 runtimes++;
             }
-            cnt+=15;    // this resets the tabu table.
+            cnt+=50;    // this resets the tabu table.
         }
         presol = currentsol;
         lr ^= 1;
