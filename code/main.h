@@ -52,7 +52,6 @@ public:
     void maintainPositions();
     int getcurrentsolution();
     void randPerturbation(int,double);
-    void randPerturbation(int,int);
     void computeM(int, int);
     void computeDelta(int, int);
     void localsearch(bool USETS=false);
@@ -60,5 +59,6 @@ public:
 };
 
 int runtimes = 0;
-int timelimit = 500;
+int timelimit = 1500;
 int tmp[N * N]; // aux array for mergesort
+double optTime;
