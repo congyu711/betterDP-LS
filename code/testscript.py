@@ -35,5 +35,5 @@ for i in range(1,5):
                 if(i==4): tmp[idx]=tmp[idx]+'\n'
                 idx=idx+1
 
-with open("testres.csv",'a') as f:
+with open("testresults/testres.csv",'a') as f:
     f.writelines(tmp)

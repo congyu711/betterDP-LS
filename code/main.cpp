@@ -1,7 +1,6 @@
 #include "main.h"
-#include "counttime.cpp"
 
-mt19937 gen(time_point_cast<milliseconds>(system_clock::now()).time_since_epoch().count());
+
 int prob::readGraph(string filepath)
 {
     int a;
@@ -21,52 +20,6 @@ int prob::readGraph(string filepath)
     for(int i=0;i<leftNum;i++)  Permutation[0][i]=i;
     for(int i=0;i<rightNum;i++)  Permutation[1][i]=i;
 
-    // fin >> a;
-    // fin >> leftNum >> rightNum;
-    // for (int i = 0; i < leftNum; i++)
-    // {
-    //     int idx, tmp;
-    //     fin >> tmp;
-
-    //     fin >> idx;
-    //     movable[0][i] = tmp;
-    //     movable[0][i] ^= 1;
-    //     // Permutation[0][i] = i; not idx
-    //     // Permutation[0][i] = i;
-    //     Permutation[0][idx]=i;
-    //     while (fin.get() != '\n')
-    //     {
-    //         fin >> tmp;
-    //         l2r[i].push_back(tmp - leftNum);
-    //     }
-    // }
-    // for (int i = 0; i < rightNum; i++)
-    // {
-    //     int idx, tmp;
-    //     fin >> tmp >> idx;
-    //     if (idx >= rightNum)
-    //         idx -= leftNum;
-    //     movable[1][i] = tmp;
-    //     movable[1][i] ^= 1;
-
-    //     Permutation[1][i] = idx;
-    // }
-
-    // for (int i = 0; i < leftNum; i++)
-    // {
-    //     for (auto &e : l2r[i])
-    //         e = Permutation[1][e];
-    // }
-
-    // ///////////////////////////////////////
-    // for (int i = 0; i < rightNum; i++)
-    //     Permutation[1][i] = i;
-    // ///////////////////////////////////////
-
-    // // compute r2l graph
-    // for (int i = 0; i < leftNum; i++)
-    //     for (auto &e : l2r[i])
-    //         r2l[e].push_back(i);
     fin.close();
     return 0;
 }
@@ -245,133 +198,134 @@ void prob::computeDelta(int lr, int num)
         }
     }
 }
+void prob::tabu(int i,int j,int lr)
+{
+    int randtmp = 17 + gen() % 5;
+    if (op[i][j] == 1 && cnt - TStable[lr][Permutation[lr][i]] < randtmp)
+    {
+        op[i][j] = 0;
+        Delta[lr][i][j] = 0;
+    }
+    else if (op[i][j] == 2 && cnt - TStable[lr][Permutation[lr][j]] < randtmp)
+    {
+        op[i][j] = 0;
+        Delta[lr][i][j] = 0;
+    }
+    else if (op[i][j] == 3 && (cnt - TStable[lr][Permutation[lr][i]] < randtmp 
+    || cnt - TStable[lr][Permutation[lr][j]] < randtmp))
+    {
+        op[i][j] = 0;
+        Delta[lr][i][j] = 0;
+    }
+}
+void prob::Delta_dp(int lr)
+{
+    /////////////////////////////////////
+    int num = (lr ? rightNum : leftNum);
+    // auto *g = (lr ? r2l : l2r);
+    /////////////////////////////////////
+    maintainPositions();
+    // computeM(lr, num);
+    computeDelta(lr, num);
+    // here delta matrix should be non-positive.
+    for (int i = 0; i < num; i++)
+    {
+        for (int j = 0; j < i; j++)
+        {
+            if (movable[lr][Permutation[lr][j]] && movable[lr][Permutation[lr][i]])
+            {
+                Delta[lr][i][j] = min(min(Deltai[lr][i][j], Deltai[lr][j][i]), Deltas[lr][i][j]);
+                if (Delta[lr][i][j] >= 0)
+                    op[i][j] = 0;
+                else if (Delta[lr][i][j] == Deltai[lr][i][j])
+                    op[i][j] = 1;
+                else if (Delta[lr][i][j] == Deltai[lr][j][i])
+                    op[i][j] = 2;
+                else
+                    op[i][j] = 3;
+            }
+            else if (movable[lr][Permutation[lr][i]])
+            {
+                Delta[lr][i][j] = Deltai[lr][i][j];
+                if (Delta[lr][i][j] < 0)
+                    op[i][j] = 1;
+                else
+                    op[i][j] = 0, Delta[lr][i][j] = 0;
+            }
+            else if (movable[lr][Permutation[lr][j]])
+            {
+                Delta[lr][i][j] = Deltai[lr][j][i];
+                if (Delta[lr][i][j] < 0)
+                    op[i][j] = 2;
+                else
+                    op[i][j] = 0, Delta[lr][i][j] = 0;
+            }
+            else
+            {
+                op[i][j] = 0;
+                Delta[lr][i][j] = 0;
+            }
+            tabu(i,j,lr);
+        }
+    }
+    // dp
+    for (int i = 0; i < num; i++)
+    {
+        dp[i] = 0;
+        if (i > 1)
+        {
+            int minn = 0, minidx = -2;
+            if(Delta[lr][i][0]<0)
+            {
+                minn=Delta[lr][i][0];
+                minidx=-1;
+            }
+            for (int j = 1; j <= i; j++)
+            {
+                if (minn > Delta[lr][i][j] + dp[j - 1])
+                {
+                    minn = Delta[lr][i][j] + dp[j - 1];
+                    minidx = j - 1;
+                }
+            }
+            if (minidx == -2)
+            {
+                dp[i] = 0;
+                ops[i][0] = make_tuple(0, 0, 0);
+                ops[i][1] = make_tuple(-1, 0, 0);
+            }
+            else
+            {
+                dp[i] = minn;
+                int j = minidx;
+                ops[i][0] = make_tuple(op[i][j + 1], i, j + 1);
+                if(minidx!=-1)
+                    ops[i][1] = make_tuple(-1, j, 0);
+                else    ops[i][1]=make_tuple(-1,0,0);
+            }
+        }
+        else if (i == 1)
+        {
+            dp[i] = Delta[lr][0][1];
+            if (op[0][1] != 0)
+            {
+                ops[i][0] = make_tuple(op[0][1], 1, 0);
+                ops[i][1] = make_tuple(0, 0, 0);
+            }
+        }
+    }
+}
 void prob::localsearch(bool USETS)
 {
     int lr = 0;
-    int cnt = 100;
+    cnt = 100;
     int presol = 0;
     ops[0][0]=ops[0][1]=make_tuple(-1,0,0);
-    auto tabu=[&](int i,int j)->void{
-        int randtmp = 17 + gen() % 5;
-        if (op[i][j] == 1 && cnt - TStable[lr][Permutation[lr][i]] < randtmp)
-        {
-            op[i][j] = 0;
-            Delta[lr][i][j] = 0;
-        }
-        else if (op[i][j] == 2 && cnt - TStable[lr][Permutation[lr][j]] < randtmp)
-        {
-            op[i][j] = 0;
-            Delta[lr][i][j] = 0;
-        }
-        else if (op[i][j] == 3 && (cnt - TStable[lr][Permutation[lr][i]] < randtmp 
-        || cnt - TStable[lr][Permutation[lr][j]] < randtmp))
-        {
-            op[i][j] = 0;
-            Delta[lr][i][j] = 0;
-        }
-    };
-    auto Delta_dp=[&]()->void{
-        /////////////////////////////////////
-        int num = (lr ? rightNum : leftNum);
-        // auto *g = (lr ? r2l : l2r);
-        /////////////////////////////////////
-        maintainPositions();
-        // computeM(lr, num);
-        computeDelta(lr, num);
-        // here delta matrix should be non-positive.
-        for (int i = 0; i < num; i++)
-        {
-            for (int j = 0; j < i; j++)
-            {
-                if (movable[lr][Permutation[lr][j]] && movable[lr][Permutation[lr][i]])
-                {
-                    Delta[lr][i][j] = min(min(Deltai[lr][i][j], Deltai[lr][j][i]), Deltas[lr][i][j]);
-                    if (Delta[lr][i][j] >= 0)
-                        op[i][j] = 0;
-                    else if (Delta[lr][i][j] == Deltai[lr][i][j])
-                        op[i][j] = 1;
-                    else if (Delta[lr][i][j] == Deltai[lr][j][i])
-                        op[i][j] = 2;
-                    else
-                        op[i][j] = 3;
-                }
-                else if (movable[lr][Permutation[lr][i]])
-                {
-                    Delta[lr][i][j] = Deltai[lr][i][j];
-                    if (Delta[lr][i][j] < 0)
-                        op[i][j] = 1;
-                    else
-                        op[i][j] = 0, Delta[lr][i][j] = 0;
-                }
-                else if (movable[lr][Permutation[lr][j]])
-                {
-                    Delta[lr][i][j] = Deltai[lr][j][i];
-                    if (Delta[lr][i][j] < 0)
-                        op[i][j] = 2;
-                    else
-                        op[i][j] = 0, Delta[lr][i][j] = 0;
-                }
-                else
-                {
-                    op[i][j] = 0;
-                    Delta[lr][i][j] = 0;
-                }
-                if(USETS) tabu(i,j);
-            }
-        }
-        // dp
-        for (int i = 0; i < num; i++)
-        {
-            dp[i] = 0;
-            if (i > 1)
-            {
-                int minn = 0, minidx = -2;
-                if(Delta[lr][i][0]<0)
-                {
-                    minn=Delta[lr][i][0];
-                    minidx=-1;
-                }
-                for (int j = 1; j <= i; j++)
-                {
-                    if (minn > Delta[lr][i][j] + dp[j - 1])
-                    {
-                        minn = Delta[lr][i][j] + dp[j - 1];
-                        minidx = j - 1;
-                    }
-                }
-                if (minidx == -2)
-                {
-                    dp[i] = 0;
-                    ops[i][0] = make_tuple(0, 0, 0);
-                    ops[i][1] = make_tuple(-1, 0, 0);
-                }
-                else
-                {
-                    dp[i] = minn;
-                    int j = minidx;
-                    ops[i][0] = make_tuple(op[i][j + 1], i, j + 1);
-                    if(minidx!=-1)
-                        ops[i][1] = make_tuple(-1, j, 0);
-                    else    ops[i][1]=make_tuple(-1,0,0);
-                }
-            }
-            else if (i == 1)
-            {
-                dp[i] = Delta[lr][0][1];
-                if (op[0][1] != 0)
-                {
-                    ops[i][0] = make_tuple(op[0][1], 1, 0);
-                    ops[i][1] = make_tuple(0, 0, 0);
-                }
-            }
-        }
-
-    };
     maintainPositions();
     computeM(0,leftNum);
     computeM(1,rightNum);
-    memcpy(CPopt[0], Permutation[0], 4 * leftNum);
-    memcpy(CPopt[1], Permutation[1], 4 * rightNum);
+    // memcpy(CPopt[0], Permutation[0], 4 * leftNum);
+    // memcpy(CPopt[1], Permutation[1], 4 * rightNum);
     int ps=3;
     while (1)
     {
@@ -380,7 +334,7 @@ void prob::localsearch(bool USETS)
         int num = (lr ? rightNum : leftNum);
         auto *g = (lr ? r2l : l2r);
         /////////////////////////////////////
-        Delta_dp();
+        Delta_dp(lr);
         // adjust Permutations.
         // O(n) because there is no intersaction between operations.
         int pos = num - 1;
@@ -512,12 +466,7 @@ void prob::localsearch(bool USETS)
         }
         maintainPositions();
         currentsol+=dp[num-1];
-        if(currentsol!=getcurrentsolution())
-        {
-            cout<<"error!\n"<<endl;
-            cout<<"num"<<num<<endl;
-            cout<<currentsol<<" != "<<getcurrentsolution()<<endl;
-        }
+        assert(currentsol==getcurrentsolution());
         // can not improve the current solution.
         if (presol == currentsol)
         {
@@ -535,7 +484,7 @@ void prob::localsearch(bool USETS)
             if(USETS)
             {
                 cnt+=50;  // reset TS table
-                Delta_dp();
+                Delta_dp(lr);
             }
             if(!USETS||dp[num-1]==0)
             {

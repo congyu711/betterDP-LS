@@ -1,9 +1,9 @@
-#pragma once
 #include <bits/stdc++.h>
+#include "counttime.cpp"
 using namespace std;
 
 const int N=3000;
-
+mt19937 gen(time_point_cast<milliseconds>(system_clock::now()).time_since_epoch().count());
 class prob
 {
 public:
@@ -40,6 +40,7 @@ public:
 
     // tabu search table
     int TStable[2][N];
+    int cnt;        // TS step counter
 
     // aux for random perturbation
     int shuffleaux[N];
@@ -56,6 +57,8 @@ public:
     void computeDelta(int, int);
     void localsearch(bool USETS=false);
     void checkcp();
+    void tabu(int, int, int);
+    void Delta_dp(int);
 };
 
 int runtimes = 0;
