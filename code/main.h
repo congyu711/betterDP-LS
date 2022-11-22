@@ -2,7 +2,7 @@
 #include "counttime.cpp"
 using namespace std;
 
-const int N=3000;
+const int N=1000;
 mt19937 gen(time_point_cast<milliseconds>(system_clock::now()).time_since_epoch().count());
 class prob
 {
@@ -62,6 +62,6 @@ public:
 };
 
 int runtimes = 0;
-int timelimit = 1500;
-int tmp[N * N]; // aux array for mergesort
+int timelimit = 5;
+int tmp[N]; // aux array for mergesort
 double optTime;

@@ -559,14 +559,13 @@ int main(int argc,char **argv)
     a.randPerturbation(0,1.0);
     a.randPerturbation(1,1.0);
     a.currentsol = a.getcurrentsolution();
-
-    int N=max(a.leftNum,a.rightNum);
-    if(N<=100)   timelimit=60;
-    else if(N<=200) timelimit=180;
-    else if(N<=300) timelimit=300;
-    else if(N<=400) timelimit=600;
-    else if(N<=500) timelimit=900;
-    else if(N<=600) timelimit=1800;
+    int N_=max(a.leftNum,a.rightNum);
+    if(N_<=100)   timelimit=60;
+    else if(N_<=200) timelimit=180;
+    else if(N_<=300) timelimit=300;
+    else if(N_<=400) timelimit=600;
+    else if(N_<=500) timelimit=900;
+    else if(N_<=600) timelimit=1800;
     else timelimit=3600;    
     st = system_clock::now();
     a.localsearch(true);
