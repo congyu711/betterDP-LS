@@ -48,6 +48,8 @@ public:
     // dp
     int dp[N];
     tuple<int, int, int> ops[N][2];
+
+    double optTime;
     // functions
     int readGraph(string);
     void maintainPositions();
@@ -55,13 +57,23 @@ public:
     void randPerturbation(int,double);
     void computeM(int, int);
     void computeDelta(int, int);
-    void localsearch(bool USETS=false);
+    void localsearch(bool, bool);
     void checkcp();
     void tabu(int, int, int);
-    void Delta_dp(int);
+    void Delta_dp(int,bool);
+};
+class gene
+{
+public:
+    int Permutation[2][N];
 };
 
-int runtimes = 0;
-int timelimit = 5;
-int tmp[N]; // aux array for mergesort
+int timelimit = 700;
+int tmp[N*N]; // aux array for mergesort
+
+const int groupsize=50;
+vector<gene> genes(groupsize);
+priority_queue<pair<int,int>> pq;   // opt, index
+unordered_set<int> groupidxs;
+int opt=INT32_MAX;
 double optTime;

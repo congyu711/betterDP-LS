@@ -1,5 +1,5 @@
 #include "main.h"
-
+#include <algorithm>
 
 int prob::readGraph(string filepath)
 {
@@ -218,7 +218,7 @@ void prob::tabu(int i,int j,int lr)
         Delta[lr][i][j] = 0;
     }
 }
-void prob::Delta_dp(int lr)
+void prob::Delta_dp(int lr,bool USETS)
 {
     /////////////////////////////////////
     int num = (lr ? rightNum : leftNum);
@@ -315,7 +315,7 @@ void prob::Delta_dp(int lr)
         }
     }
 }
-void prob::localsearch(bool USETS)
+void prob::localsearch(bool USETS,bool GENE)
 {
     int lr = 0;
     cnt = 100;
@@ -324,6 +324,7 @@ void prob::localsearch(bool USETS)
     maintainPositions();
     computeM(0,leftNum);
     computeM(1,rightNum);
+    currentsol=getcurrentsolution();
     // memcpy(CPopt[0], Permutation[0], 4 * leftNum);
     // memcpy(CPopt[1], Permutation[1], 4 * rightNum);
     int ps=3;
@@ -334,7 +335,7 @@ void prob::localsearch(bool USETS)
         int num = (lr ? rightNum : leftNum);
         auto *g = (lr ? r2l : l2r);
         /////////////////////////////////////
-        Delta_dp(lr);
+        Delta_dp(lr,USETS);
         // adjust Permutations.
         // O(n) because there is no intersaction between operations.
         int pos = num - 1;
@@ -484,22 +485,23 @@ void prob::localsearch(bool USETS)
             if(USETS)
             {
                 cnt+=50;  // reset TS table
-                Delta_dp(lr);
+                Delta_dp(lr,0);
             }
             if(!USETS||dp[num-1]==0)
             {
+                //////////////////////////////////////////////////////
+                // GENETIC METHOD: directly break, no perturbation! //
+                    if(GENE)    break;
+                //////////////////////////////////////////////////////
                 memcpy(Permutation[0], CPopt[0], 4 * leftNum);
                 memcpy(Permutation[1], CPopt[1], 4 * rightNum);
                 ps=min({ps*2,leftNum,rightNum});
                 randPerturbation(0,1.0*ps/leftNum);
                 randPerturbation(1,1.0*ps/rightNum);
-                // randPerturbation(0,0.1+(gen()%100)/500.0);
-                // randPerturbation(1,0.1+(gen()%100)/500.0);
 
                 currentsol=getcurrentsolution();
                 computeM(0,leftNum);
                 computeM(1,rightNum);
-                runtimes++;
             }
             cnt+=50;    // this resets the tabu table.
         }
@@ -541,24 +543,33 @@ void prob::checkcp()
         if(e!=1)    cout<<"is not permutation\n";
     }
     
-    // cout<<"input to continue\n";
-    // char aaa;
-    // cin>>aaa;
     memcpy(Permutation[0], CPopt[0], 4 * leftNum);
     memcpy(Permutation[1], CPopt[1], 4 * rightNum);
     cout<<getcurrentsolution()<<endl;
 }
 int main(int argc,char **argv)
 {
+    st = system_clock::now();
     string inputPath(argv[1]);
     string outputPath(argv[2]);
+    // string inputPath="/home/congyu/dpls/code/BGCMP/instances/Hyper_5.txt";
+    // string outputPath="/home/congyu/dpls/code/a.out";
     ofstream testresult(outputPath,ios::app);
-    ios::sync_with_stdio(false);
     static prob a;
     a.readGraph(inputPath);
-    a.randPerturbation(0,1.0);
-    a.randPerturbation(1,1.0);
     a.currentsol = a.getcurrentsolution();
+    for(int i=0;i<groupsize;i++)
+    {
+        a.randPerturbation(0);
+        a.randPerturbation(1);
+        a.localsearch(false,true);
+        memcpy(genes[i].Permutation[0],a.Permutation[0],4*a.leftNum);
+        memcpy(genes[i].Permutation[1],a.Permutation[1],4*a.rightNum);
+        groupidxs.insert(i);
+        pq.push(make_pair(a.currentsol,i));
+    }
+
+
     int N_=max(a.leftNum,a.rightNum);
     if(N_<=100)   timelimit=60;
     else if(N_<=200) timelimit=180;
@@ -567,18 +578,56 @@ int main(int argc,char **argv)
     else if(N_<=500) timelimit=900;
     else if(N_<=600) timelimit=1800;
     else timelimit=3600;    
-    st = system_clock::now();
-    a.localsearch(true);
+    while (counttime(st,system_clock::now())<timelimit)
+    {
+        int l=gen()%genes.size(),r=gen()%genes.size();
+        // bad implementation, but don't have better idea to randomly pick ele. in std::unordered_set.
+        while(groupidxs.count(l)==0)    l=gen()%genes.size();
+        while(groupidxs.count(r)==0)    r=gen()%genes.size();
+
+
+        // memcpy(genes.end()[-1].Permutation[0],genes[l].Permutation[0], 4 * genes[l].leftNum);
+        // memcpy(genes.end()[-2].Permutation[1],genes[l].Permutation[1], 4 * genes[l].rightNum);
+        // memcpy(genes.end()[-2].Permutation[0],genes[r].Permutation[0], 4 * genes[r].leftNum);
+        // memcpy(genes.end()[-1].Permutation[1],genes[r].Permutation[1], 4 * genes[r].rightNum);
+        memcpy(a.Permutation[0],genes[r].Permutation[0], 4 * a.leftNum);
+        memcpy(a.Permutation[1],genes[l].Permutation[1], 4 * a.rightNum);
+        a.localsearch(false,true);
+        if(pq.top().first>a.currentsol)
+        {
+            genes.emplace_back();
+            memcpy(genes.end()[-1].Permutation[0],a.Permutation[0],4*a.leftNum);
+            memcpy(genes.end()[-1].Permutation[1],a.Permutation[1],4*a.rightNum);
+            groupidxs.erase(pq.top().second);
+            groupidxs.insert(genes.size()-1);
+            pq.pop();
+            pq.push(make_pair(a.currentsol,genes.size()-1));
+            if(a.currentsol<opt)
+            {
+                opt=a.currentsol;
+                optTime=counttime(st,system_clock::now());
+            }
+        }
+        memcpy(a.Permutation[0],genes[l].Permutation[0], 4 * a.leftNum);
+        memcpy(a.Permutation[1],genes[r].Permutation[1], 4 * a.rightNum);
+        a.localsearch(false,true);
+        if(pq.top().first>a.currentsol)
+        {
+            genes.emplace_back();
+            memcpy(genes.end()[-1].Permutation[0],a.Permutation[0],4*a.leftNum);
+            memcpy(genes.end()[-1].Permutation[1],a.Permutation[1],4*a.rightNum);
+            groupidxs.erase(pq.top().second);
+            groupidxs.insert(genes.size()-1);
+            pq.pop();
+            pq.push(make_pair(a.currentsol,genes.size()-1));
+            if(a.currentsol<opt)
+            {
+                opt=a.currentsol;
+                optTime=counttime(st,system_clock::now());
+            }
+        }
+    }    
     // a.currentsol = a.getcurrentsolution();
     // a.opt=min(a.opt,a.currentsol);
-    ed = system_clock::now();
-    testresult<<inputPath<<", "<<a.opt<<", "<<optTime<<'\n';
-    // a.checkcp();
-
-
-    // ifstream fin("result2.out");
-    // for(int i=0;i<a.leftNum;i++)    fin>>a.Permutation[0][i];
-    // for(int i=0;i<a.rightNum;i++)   fin>>a.Permutation[1][i];
-    // a.maintainPositions();
-    // cout<<"NewGraph result: "<<a.getcurrentsolution()<<endl; 
+    testresult<<inputPath<<", "<<opt<<", "<<optTime<<'\n';
 }
